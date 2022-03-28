@@ -134,17 +134,10 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         this.data.textLines = [];
         this.__parseText();
         this.__drawText();
-//         const imageData = this.data.context.getImageData(0,0,this.data.canvas.width, this.data.canvas.height);
-//         console.log(imageData.data[0],imageData.data[1],imageData.data[2],imageData.data[3]);
-//         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.data.framebuffer);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.data.texture);
-//         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-//         this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.data.canvas);
-//         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, imageData);
-//         this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-//         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
 }
 Object.defineProperties(WebPageTextNode.prototype, {
