@@ -2,17 +2,17 @@
 //         Copyright 2022 Leonid Petrunya
 //              All rights reserved
 // ----------------------------------------------
-//              WebPageFunctionNode
+//              WebPagePumNode
 // ----------------------------------------------
 
 import {WebPageBaseNode} from './WebPageBaseNode.js';
 
-class WebPageFunctionNode extends WebPageBaseNode {
+class WebPagePumNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
     }
 }
-Object.defineProperties(WebPageFunctionNode.prototype, {
+Object.defineProperties(WebPagePumNode.prototype, {
 });
 
-export {WebPageFunctionNode};
+export {WebPagePumNode};
