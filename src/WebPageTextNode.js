@@ -100,7 +100,6 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         this.data.context.shadowOffsetY = this.shadowOffsetY;
         this.data.context.shadowBlur = this.shadowBlur;
         let i = 1;
-        console.log(position);
         for(const line of this.data.textLines) {
             this.data.context.fillText(line, position, this.paddingTop + this.data.lineHeight * i++, this.data.maxWidth);
         }
