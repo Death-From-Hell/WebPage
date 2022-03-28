@@ -21,7 +21,6 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
             {name: "fontStyle", defaultValue: "normal"},
             {name: "textBaseline", defaultValue: "alphabetic"},
             {name: "textAlign", defaultValue: "left"},
-            {name: "textDirection", defaultValue: "ltr"},
             {name: "text", defaultValue: ""},
             {name: "width", defaultValue: 500},
             {name: "alpha", defaultValue: 1},
@@ -69,31 +68,17 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         this.data.canvas.height = this.data.height;
     }
     __drawText() {
-        this.gl.disable(this.gl.BLEND);
+//         this.gl.disable(this.gl.BLEND);
 
         this.data.context.globalAlpha = this.alpha;
-//         this.data.context.globalAlpha = 0.5;
         this.data.context.fillStyle = this.backgroundColor;
 //         this.data.context.clearRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         this.data.context.fillRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         let position;
         switch(this.textAlign) {
             case "left":
-                position = this.paddingLeft;
-                break;
             case "start":
-                switch(this.textDirection) {
-                    case "ltr":
-                        position = this.paddingLeft;
-                        break;
-                    case "rtl":
-                        position = this.width - this.paddingRight;
-                        break;
-                    default:
-                        position = 0;
-                        break;
-                }
-//                 position = this.paddingLeft;
+                position = this.paddingLeft;
                 break;
             case "right":
             case "end":
@@ -103,23 +88,23 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
                 position = this.paddingLeft + (this.width - (this.paddingLeft + this.paddingRight)) / 2;
                 break;
             default:
-                position = 0;
+                position = this.paddingLeft;
                 break;
         }
         this.data.context.fillStyle = this.color;
         this.data.context.textBaseline = this.textBaseline;
         this.data.context.textAlign = this.textAlign;
-        this.data.context.direction = this.textDirection;
         this.data.context.font = this.data.font;
         this.data.context.shadowColor = this.shadowColor;
         this.data.context.shadowOffsetX = this.shadowOffsetX;
         this.data.context.shadowOffsetY = this.shadowOffsetY;
         this.data.context.shadowBlur = this.shadowBlur;
         let i = 1;
+        console.log(position);
         for(const line of this.data.textLines) {
             this.data.context.fillText(line, position, this.paddingTop + this.data.lineHeight * i++, this.data.maxWidth);
         }
-        this.gl.enable(this.gl.BLEND);
+//         this.gl.enable(this.gl.BLEND);
     }
     __update() {
         if(this.enable && this.update) {
@@ -180,10 +165,6 @@ Object.defineProperties(WebPageTextNode.prototype, {
     "textAlign": {
         get() {return this.__getValue(this.input.textAlign);},
         set(value) {this.input.textAlign = value;}
-    },
-    "textDirection": {
-        get() {return this.__getValue(this.input.textDirection);},
-        set(value) {this.input.textDirection = value;}
     },
     "text": {
         get() {return this.__getValue(this.input.text);},
