@@ -68,11 +68,8 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         this.data.canvas.height = this.data.height;
     }
     __drawText() {
-//         this.gl.disable(this.gl.BLEND);
-
         this.data.context.globalAlpha = this.alpha;
         this.data.context.fillStyle = this.backgroundColor;
-//         this.data.context.clearRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         this.data.context.fillRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         let position;
         switch(this.textAlign) {
@@ -103,7 +100,6 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         for(const line of this.data.textLines) {
             this.data.context.fillText(line, position, this.paddingTop + this.data.lineHeight * i++, this.data.maxWidth);
         }
-//         this.gl.enable(this.gl.BLEND);
     }
     __update() {
         if(this.enable && this.update) {
