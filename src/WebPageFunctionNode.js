@@ -16,12 +16,16 @@ class WebPageFunctionNode extends WebPageBaseNode {
             {name: "instantCall"},
         );
         if(this.enable && this.instantCall) {
+            this.__setup();
             this.call();
+            this.__cleanup();
         }
     }
     __update() {
         if(this.enable && this.update) {
+            this.__setup();
             this.call();
+            this.__cleanup();
         }
     }
     call() {

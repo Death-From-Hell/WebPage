@@ -21,7 +21,9 @@ class WebPageGraphNode extends WebPageBaseNode {
     }
     __update() {
         if(this.enable) {
+            this.__setup();
             this.draw();
+            this.__cleanup();
         }
     }
     sort() {

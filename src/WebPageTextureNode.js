@@ -16,7 +16,9 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
         );
         this.__init();
         if(this.enable && this.instantLoad) {
+            this.__setup();
             this.load();
+            this.__cleanup();
         }
     }
     __init() {
@@ -65,7 +67,9 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
     }
     __update() {
         if(this.enable && this.update) {
+            this.__setup();
             this.load();
+            this.__cleanup();
         }
     }
 }

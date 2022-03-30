@@ -19,7 +19,9 @@ class WebPagePivotPointNode extends WebPageBaseNode {
         );
         this.data.matrix = Mat4.identity();
         if(this.enable) {
+            this.__setup();
             this.calculate();
+            this.__cleanup();
         }
     }
     calculate() {
@@ -75,7 +77,9 @@ class WebPagePivotPointNode extends WebPageBaseNode {
     }
     __update() {
         if(this.enable && this.update) {
+            this.__setup();
             this.calculate();
+            this.__cleanup();
         }
     }
 }

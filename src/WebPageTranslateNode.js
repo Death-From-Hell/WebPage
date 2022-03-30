@@ -18,7 +18,9 @@ class WebPageTranslateNode extends WebPageBaseNode {
             {name: "z", defaultValue: 0},
         );
         if(this.enable) {
+            this.__setup();
             this.calculate();
+            this.__cleanup();
         } else {
             this.data.matrix = Mat4.identity();
         }
@@ -32,7 +34,9 @@ class WebPageTranslateNode extends WebPageBaseNode {
     }
     __update() {
         if(this.enable && this.update) {
+            this.__setup();
             this.calculate();
+            this.__cleanup();
         }
     }
 }

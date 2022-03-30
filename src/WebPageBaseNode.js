@@ -17,9 +17,21 @@ class WebPageBaseNode extends WebPageRoot {
         this.__loadVar(argDataVar);
         this.__loadInputVar(argObject,
             {name: "name"},
+            {name: "setup"},
+            {name: "cleanup"},
             {name: "update", defaultValue: true},
             {name: "enable", defaultValue: true},
         );
+    }
+    __setup() {
+        if(this.__getType(this.setup) === "function") {
+            this.setup();
+        }
+    }
+    __cleanup() {
+        if(this.__getType(this.cleanup) === "function") {
+            this.cleanup();
+        }
     }
     __loadInputVar(argData, ...argFields) {
         argFields.forEach((e) => {
@@ -99,6 +111,14 @@ Object.defineProperties(WebPageBaseNode.prototype, {
     "name": {
         get() {return this.__getValue(this.input.name);},
         set(value) {this.input.name = value;}
+    },
+    "setup": {
+        get() {return this.input.setup;},
+        set(value) {this.input.setup = value;}
+    },
+    "cleanup": {
+        get() {return this.input.cleanup;},
+        set(value) {this.input.cleanup = value;}
     },
     "update": {
         get() {return this.__getValue(this.input.update);},

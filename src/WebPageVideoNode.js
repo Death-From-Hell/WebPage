@@ -64,6 +64,7 @@ class WebPageVideoNode extends WebPageBaseNode {
         this.video.currentTime = 0;
     }
     __update() {
+        this.__setup();
         const loop = this.loop;
         if(this.video.loop != loop) {
             this.video.loop = loop;
@@ -80,6 +81,7 @@ class WebPageVideoNode extends WebPageBaseNode {
         if(currentTime !== undefined) {
             this.video.currentTime = currentTime;
         }
+        this.__cleanup();
     }
 }
 Object.defineProperties(WebPageVideoNode.prototype, {

@@ -33,7 +33,9 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
             {name: "blendDstAlpha", defaultValue: "oneMinusSrcAlpha"},
         );
         if(this.enable && this.instantDraw) {
+            this.__setup();
             this.draw();
+            this.__cleanup();
         }
     }
     __getBlendFunc(argName) {
@@ -342,7 +344,9 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
     }
     __update() {
         if(this.enable && this.update) {
+            this.__setup();
             this.draw();
+            this.__cleanup();
         }
     }
 }
