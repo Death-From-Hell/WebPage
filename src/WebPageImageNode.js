@@ -20,6 +20,7 @@ class WebPageImageNode extends WebPageBaseNode {
             {name: "onerror"},
         );
         this.data.image = new Image();
+        this.data.image.crossOrigin = "Anonymous";
     }
     load() {
         this.trigger("onloadstart");
