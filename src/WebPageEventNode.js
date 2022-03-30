@@ -50,16 +50,6 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
-            /*
-            eventMouseover: {
-                down: new Map(),
-                up: new Map(),
-            },
-            eventMouseout: {
-                down: new Map(),
-                up: new Map(),
-            },
-            */
             eventWheel: {
                 down: new Map(),
                 up: new Map(),
@@ -94,14 +84,6 @@ class WebPageEventNode extends WebPageBaseNode {
             case "mouseout":
                 eventData = this.data.eventMouseout;
                 break;
-            /*    
-            case "mouseover":
-                eventData = this.data.eventMouseover;
-                break;
-            case "mouseout":
-                eventData = this.data.eventMouseout;
-                break;
-            */    
             case "wheel":
                 eventData = this.data.eventWheel;
                 break;
@@ -170,15 +152,15 @@ class WebPageEventNode extends WebPageBaseNode {
                 position: position,
             });
             this.__run({
-                event: "mouseover",
-                objects: overObjects,
-                eventData: this.data.eventMouseover,
-                position: position,
-            });
-            this.__run({
                 event: "mouseout",
                 objects: outObjects,
                 eventData: this.data.eventMouseout,
+                position: position,
+            });
+            this.__run({
+                event: "mouseover",
+                objects: overObjects,
+                eventData: this.data.eventMouseover,
                 position: position,
             });
             this.data.objects = objects;
@@ -233,6 +215,11 @@ class WebPageEventNode extends WebPageBaseNode {
         }, false);
     }
     __run(argData) {
+        /*
+        if((argData.event == "mouseover" || argData.event == "mouseout") && argData.objects.length > 0) {
+            console.dir(argData.event, argData.objects);
+        }
+        */
         const objects = argData.objects;
         const eventData = argData.eventData;
         const position = argData.position;
