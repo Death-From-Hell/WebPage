@@ -50,6 +50,7 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
+            /*
             eventMouseover: {
                 down: new Map(),
                 up: new Map(),
@@ -58,6 +59,7 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
+            */
             eventWheel: {
                 down: new Map(),
                 up: new Map(),
@@ -92,12 +94,14 @@ class WebPageEventNode extends WebPageBaseNode {
             case "mouseout":
                 eventData = this.data.eventMouseout;
                 break;
+            /*    
             case "mouseover":
                 eventData = this.data.eventMouseover;
                 break;
             case "mouseout":
                 eventData = this.data.eventMouseout;
                 break;
+            */    
             case "wheel":
                 eventData = this.data.eventWheel;
                 break;
