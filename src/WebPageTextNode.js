@@ -22,7 +22,9 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
             {name: "textBaseline", defaultValue: "alphabetic"},
             {name: "textAlign", defaultValue: "left"},
             {name: "text", defaultValue: ""},
-            {name: "width", defaultValue: 500},
+            {name: "maxWidth", defaultValue: () => this.gl.canvas.width},
+            {name: "shrink", defaultValue: true},
+            {name: "grow", defaultValue: true},
             {name: "alpha", defaultValue: 1},
             {name: "color", defaultValue: "#000000"},
             {name: "backgroundColor", defaultValue: "#ffffff"},
@@ -43,38 +45,57 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
     __init() {
         this.data.canvas = document.createElement("canvas");
         this.data.context = this.data.canvas.getContext("2d");
-//         console.log(this.data.context.clearRect);
-        this.data.height = 1;
+        this.height = 10;
+        this.width = 10;
         super.__init();
     }
     __parseText() {
+        const widthWithoutPadding = this.maxWidth - (this.paddingLeft + this.paddingRight);
+        this.data.lineHeight = this.lineHeight * this.fontSize;
+        this.data.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`;
+        this.data.textLines = [];
         this.data.context.font = this.data.font;
+        let actualWidth = 0;
+        const widthLineInPixel = (argLine) => {
+            return this.data.context.measureText(argLine).width;
+        }
+        const pushLine = (argLine) => {
+            const lineWidth = widthLineInPixel(argLine);
+            this.data.textLines.push({
+                line: argLine,
+                width: lineWidth
+            });
+            actualWidth = Math.max(actualWidth, lineWidth + this.paddingLeft + this.paddingRight);
+        }
         const re=/\r\n|\n\r|\n|\r/g;
         const lines=this.text.replace(re,"\n").split("\n");
         for(const line of lines) {
             const words = line.split(/\s+/).filter(e => e.length > 0);
-            let word, lineWords = "", oldLineWords = "";
+            let lineWords = "", oldLineWords = "";
             for(const word of words) {
                 oldLineWords = lineWords;
                 lineWords = lineWords + (lineWords.length > 0 ? " " : "") + word;
-                const width = this.data.context.measureText(lineWords).width;
-                if(width > this.data.maxWidth && oldLineWords.length > 0) {
-                    this.data.textLines.push(oldLineWords);
-                    oldLineWords = "";
+                const width = widthLineInPixel(lineWords);
+                if(width > widthWithoutPadding && oldLineWords.length > 0) {
+                    pushLine(oldLineWords);
                     lineWords = word;
                 }
             }
-            this.data.textLines.push(lineWords);
+            pushLine(lineWords);
         }
-        this.data.height = this.paddingTop + this.data.lineHeight * this.data.textLines.length + this.paddingBottom;
-        this.data.canvas.height = this.data.height;
+        if((actualWidth > this.maxWidth && this.grow) || (actualWidth < this.maxWidth && this.shrink)) {
+            this.width = actualWidth;
+        } else {
+            this.width = this.maxWidth;
+        }
+        this.height = this.paddingTop + this.data.lineHeight * this.data.textLines.length + this.paddingBottom;
     }
     __drawText() {
 //         this.gl.disable(this.gl.BLEND);
-
+        this.data.canvas.width = this.width;
+        this.data.canvas.height = this.height;
         this.data.context.globalAlpha = this.alpha;
         this.data.context.fillStyle = this.backgroundColor;
-//         this.data.context.clearRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         this.data.context.fillRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         let position;
         switch(this.textAlign) {
@@ -102,8 +123,9 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         this.data.context.shadowOffsetY = this.shadowOffsetY;
         this.data.context.shadowBlur = this.shadowBlur;
         let i = 1;
-        for(const line of this.data.textLines) {
-            this.data.context.fillText(line, position, this.paddingTop + this.data.lineHeight * i++, this.data.maxWidth);
+        const widthWithoutPadding = this.width - (this.paddingLeft + this.paddingRight);
+        for(const entry of this.data.textLines) {
+            this.data.context.fillText(entry.line, position, this.paddingTop + this.data.lineHeight * i++, Math.max(entry.width, widthWithoutPadding));
         }
 //         this.gl.enable(this.gl.BLEND);
     }
@@ -115,11 +137,6 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         }
     }
     draw() {
-        this.data.canvas.width = this.width;
-        this.data.maxWidth = this.width - (this.paddingLeft + this.paddingRight),
-        this.data.lineHeight = this.lineHeight * this.fontSize;
-        this.data.font = `${this.fontStyle} ${this.fontWeight} ${this.fontSize}px ${this.fontFamily}`;
-        this.data.textLines = [];
         this.__parseText();
         this.__drawText();
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.data.texture);
@@ -173,13 +190,17 @@ Object.defineProperties(WebPageTextNode.prototype, {
         get() {return this.__getValue(this.input.text);},
         set(value) {this.input.text = value;}
     },
-    "width": {
-        get() {return this.__getValue(this.input.width);},
-        set(value) {this.input.width = value;}
+    "maxWidth": {
+        get() {return this.__getValue(this.input.maxWidth);},
+        set(value) {this.input.maxWidth = value;}
     },
-    "height": {
-        get() {return this.__getValue(this.data.height);},
-        set(value) {this.data.height = value;}
+    "shrink": {
+        get() {return this.__getValue(this.input.shrink);},
+        set(value) {this.input.shrink = value;}
+    },
+    "grow": {
+        get() {return this.__getValue(this.input.grow);},
+        set(value) {this.input.grow = value;}
     },
     "context": {
         get() {return this.__getValue(this.data.context);},
