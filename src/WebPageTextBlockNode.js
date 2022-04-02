@@ -37,7 +37,6 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             name: "Graph",
             clear: false
         });
-        consol.log(this.data.graph);
         
         this.data.textNode = this.data.graph.node("Text", {
             name: "Text Node",
