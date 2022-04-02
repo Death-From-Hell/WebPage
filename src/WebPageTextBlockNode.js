@@ -8,9 +8,9 @@
 import {WebPageBaseNode} from "./WebPageBaseNode.js";
  
 class WebPageTextBlockNode extends WebPageBaseNode {
-    constructor(argParams = {}, argVars = {}) {
-        super(argParams, argVars);
-        this.__loadInputVar(argParams,
+    constructor(argObject = {}, argDataVar = {}) {
+        super(argObject, argDataVar);
+        this.__loadInputVar(argObject,
             {name: "title", defaultValue: ""},
             {name: "eventNode"},
             {name: "textNodeValue"},
@@ -60,16 +60,16 @@ class WebPageTextBlockNode extends WebPageBaseNode {
         const scaleText = this.data.graph.node("Scale", {
             name: "Scale Text",
             transformNode: pivotPointText,
-            x: this.scaleX,
-            y: this.scaleY,
+            x: () => this.scaleX,
+            y: () => this.scaleY,
             z: 1,
         });
 
         const translateText = this.data.graph.node("Translate", {
             name: "Translate Text",
             transformNode: scaleText,
-            x: this.translateX,
-            y: this.translateY,
+            x: () => this.translateX,
+            y: () => this.translateY,
             z: 0,
         });
     
