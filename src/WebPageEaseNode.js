@@ -65,7 +65,8 @@ class WebPageEaseNode extends WebPageBaseNode {
         }
     }
     __clear() {
-        this.data.value = 0;
+        this.data.value = this.startValue;
+        this.data.deltaValue = this.endValue - this.startValue;
         this.data.parametricValue = 0;
         this.data.iteration.number = 0;
         this.data.timeout.value = 0;
