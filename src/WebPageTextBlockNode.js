@@ -82,7 +82,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             objectId: this.data.textNode.id,
         });
         
-        if(this.linkUrl) {
+        if(this.linkUrl && this.__isNode(this.eventNode)) {
             this.eventNode.addEventListener({
                 phase: "down",
                 func: (e) => {e.cursor("pointer");},
@@ -163,6 +163,10 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     "translateY": {
         get() {return this.__getValue(this.input.translateY);},
         set(value) {this.input.translateY = value;}
+    },
+    "linkUrl": {
+        get() {return this.__getValue(this.input.linkUrl);},
+        set(value) {this.input.linkUrl = value;}
     },
 });
 
