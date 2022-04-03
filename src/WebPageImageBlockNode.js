@@ -2,18 +2,19 @@
 //         Copyright 2022 Leonid Petrunya
 //              All rights reserved
 // ----------------------------------------------
-//             WebPageTextBlockNode
+//             WebPageImageBlockNode
 // ----------------------------------------------
 
 import {WebPageBaseNode} from "./WebPageBaseNode.js";
  
-class WebPageTextBlockNode extends WebPageBaseNode {
+class WebPageImageBlockNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
             {name: "title", defaultValue: ""},
             {name: "eventNode"},
-            {name: "textNodeValue"},
+            {name: "src"},
+            {name: "crossOrigin", defaultValue: false},
             {name: "pivotPointX", defaultValue: "center"},
             {name: "pivotPointY", defaultValue: "center"},
             {name: "scaleX", defaultValue: 1},
@@ -27,7 +28,8 @@ class WebPageTextBlockNode extends WebPageBaseNode {
     async init() {
         const nodes = [
             "graph",
-            "text",
+            "image",
+            "texture",
             "pivotPoint",
             "scale",
             "translate",
@@ -39,48 +41,51 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             clear: false
         });
         
-        this.data.textNode = this.data.graph.node("Text", {
-            name: "Text Node",
-            update: false,
-            instantDraw: false
+        this.data.imageNode = this.data.graph.node("Image", {
+            name: "Image Node",
+            src: this.src,
+            crossOrigin: this.crossOrigin
         });
-        this.root.addEventListener("resize", () => {this.data.textNode.draw();});
+        await this.data.imageNode.load().catch(e => console.warn(e));
+
+        this.data.textureNode = this.data.graph.node("Texture", {
+            name: "Texture Node",
+            sourceNode: this.data.imageNode,
+            instantLoad: true,
+            update: false
+        });
         
-        for(const [key, value] of Object.entries(this.textNodeValue)) {
-            this.data.textNode[key] = value;
-        }
-        this.data.textNode.draw();
-        
-        const pivotPointText = this.data.graph.node("PivotPoint", {
-            name: "Pivot Point Text",
+        const pivotPointTexture = this.data.graph.node("PivotPoint", {
+            name: "Pivot Point Texture",
             x: this.pivotPointX,
             y: this.pivotPointY,
-            objectNode: this.data.textNode,
+            objectNode: this.data.textureNode,
         });
     
-        const scaleText = this.data.graph.node("Scale", {
-            name: "Scale Text",
-            transformNode: pivotPointText,
+        const scaleTexture = this.data.graph.node("Scale", {
+            name: "Scale Texture",
+            transformNode: pivotPointTexture,
             x: () => this.scaleX,
             y: () => this.scaleY,
             z: 1,
         });
 
-        const translateText = this.data.graph.node("Translate", {
-            name: "Translate Text",
-            transformNode: scaleText,
+        const translateTexture = this.data.graph.node("Translate", {
+            name: "Translate Texture",
+            transformNode: scaleTexture,
             x: () => this.translateX,
             y: () => this.translateY,
-            z: () => this.translateY,
+            z: () => this.translateZ,
         });
     
-        const drawText = this.data.graph.node("DrawTexture", {
-            name: "Draw Text",
-            textureNode: this.data.textNode,
-            transformNode: translateText,
+        const drawTexture = this.data.graph.node("DrawTexture", {
+            name: "Draw Texture",
+            textureNode: this.data.textureNode,
+            transformNode: translateTexture,
             instantDraw: true,
             eventNode: this.eventNode,
-            objectId: this.data.textNode.id,
+            objectId: this.data.textureNode.id,
+            cleanup: () => {console.log("ss");}
         });
         
         if(this.linkUrl && this.__isNode(this.eventNode)) {
@@ -88,13 +93,13 @@ class WebPageTextBlockNode extends WebPageBaseNode {
                 phase: "down",
                 func: (e) => {e.cursor("pointer");},
                 event: "mouseover",
-                objectId: this.data.textNode.id
+                objectId: this.data.textureNode.id
             });
             this.eventNode.addEventListener({
                 phase: "down",
                 func: (e) => {e.cursor("default");},
                 event: "mouseout",
-                objectId: this.data.textNode.id
+                objectId: this.data.textureNode.id
             });
             this.eventNode.addEventListener({
                 phase: "down",
@@ -103,7 +108,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
                     location.href = this.linkUrl;
                 },
                 event: "click",
-                objectId: this.data.textNode.id
+                objectId: this.data.textureNode.id
             });
         }
         
@@ -120,18 +125,25 @@ class WebPageTextBlockNode extends WebPageBaseNode {
     update() {
         this.data.graph.__update();
     }
-    
 }
-Object.defineProperties(WebPageTextBlockNode.prototype, {
+Object.defineProperties(WebPageImageBlockNode.prototype, {
     "width": {
-        get() {return this.data.textNode.width;},
+        get() {return this.data.textureNode.width;},
     },
     "height": {
-        get() {return this.data.textNode.height;},
+        get() {return this.data.textureNode.height;},
     },
     "title": {
         get() {return this.__getValue(this.input.title);},
         set(value) {this.input.title = value;}
+    },
+    "src": {
+        get() {return this.__getValue(this.input.src);},
+        set(value) {this.input.src = value;}
+    },
+    "crossOrigin": {
+        get() {return this.__getValue(this.input.crossOrigin);},
+        set(value) {this.input.crossOrigin = value;}
     },
     "eventNode": {
         get() {return this.__getValue(this.input.eventNode);},
@@ -175,5 +187,4 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     },
 });
 
-export {WebPageTextBlockNode};
-
+export {WebPageImageBlockNode};
