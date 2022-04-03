@@ -10,12 +10,13 @@ class WebPageBaseNode {
         this.input = {};
         this.data = {};
         this.event = {};
-        this.parent = new Set();
+//         this.parent = new Set();
         this.__loadVar(argDataVar);
         this.__loadInputVar(argObject,
             {name: "name"},
             {name: "setup"},
             {name: "cleanup"},
+            {name: "parentNodes", defaultValue: []},
             {name: "update", defaultValue: true},
             {name: "enable", defaultValue: true},
         );
@@ -74,7 +75,7 @@ class WebPageBaseNode {
                 nodes.add(object);
             }
         }
-        for(const parentNode of this.parent) {
+        for(const parentNode of this.parentNodes) {
             if(this.__isNode(parentNode)) {
                 nodes.add(parentNode);
             }
@@ -83,13 +84,7 @@ class WebPageBaseNode {
     }
     addParentNodes(...argNodes) {
         for(const node of argNodes) {
-            this.parent.add(node);
-        }
-        return this;
-    }
-    deleteParentNodes(...argNodes) {
-        for(const node of argNodes) {
-            this.parent.delete(node);
+            this.parentNodes.push(node);
         }
         return this;
     }
@@ -128,6 +123,10 @@ Object.defineProperties(WebPageBaseNode.prototype, {
     "cleanup": {
         get() {return this.input.cleanup;},
         set(value) {this.input.cleanup = value;}
+    },
+    "parentNodes": {
+        get() {return this.__getValue(this.input.parentNodes);},
+        set(value) {this.input.parentNodes = value;}
     },
     "update": {
         get() {return this.__getValue(this.input.update);},
