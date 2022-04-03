@@ -23,7 +23,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             {name: "translateY", defaultValue: 0},
             {name: "translateZ", defaultValue: 0},
             {name: "linkUrl"},
-            {name: "instantDraw", defaultValue: false},
+            {name: "instantDraw"},
         );
     }
     async init() {
