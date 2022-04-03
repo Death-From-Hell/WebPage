@@ -5,7 +5,6 @@
 //                   WebPage
 // ----------------------------------------------
 
-import {WebPageRoot} from "./WebPageRoot.js";
 import {WebPageBaseNode} from "./WebPageBaseNode.js";
 
 // Обработчик ошибок
@@ -21,7 +20,7 @@ function WebPageSimpleError(argMessage) {
   	throw 'Программа остановлена.';
 }
 
-class WebPage extends WebPageRoot {
+class WebPage extends WebPageBaseNode {
     constructor(argObject = {}) {
         super();
         this.root = this;
@@ -197,11 +196,6 @@ class WebPage extends WebPageRoot {
         return instance;
     }
 }
-WebPage.prototype.__loadInputVar = WebPageBaseNode.prototype.__loadInputVar;
-WebPage.prototype.addEventListener = WebPageBaseNode.prototype.addEventListener;
-WebPage.prototype.removeEventListener = WebPageBaseNode.prototype.removeEventListener;
-WebPage.prototype.trigger = WebPageBaseNode.prototype.trigger;
-
 Object.defineProperties(WebPage.prototype, {
     "canvas": {
         get() {return this.__getValue(this.input.canvas);},

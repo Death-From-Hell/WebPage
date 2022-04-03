@@ -5,11 +5,8 @@
 //                WebPageBaseNode
 // ----------------------------------------------
 
-import {WebPageRoot} from "./WebPageRoot.js";
- 
-class WebPageBaseNode extends WebPageRoot {
+class WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
-        super();
         this.input = {};
         this.data = {};
         this.event = {};
@@ -23,14 +20,26 @@ class WebPageBaseNode extends WebPageRoot {
             {name: "enable", defaultValue: true},
         );
     }
+    __getType(arg) {
+        // number, boolean, string, array, object, function, undefined, window, htmldocument и т.д.
+        return Object.prototype.toString.call(arg).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+    }
+    __getValue(argValue) {
+        if(this.__getType(argValue) === "function" && !WebPageBaseNode.prototype.isPrototypeOf(argValue)) {
+            return argValue.call(this);
+        } else {
+            return argValue;
+        }
+    }
     __setup() {
         if(this.__getType(this.setup) === "function") {
-            this.setup();
+            const o = {};
+            this.setup.call(this);
         }
     }
     __cleanup() {
         if(this.__getType(this.cleanup) === "function") {
-            this.cleanup();
+            this.cleanup.call(this);
         }
     }
     __loadInputVar(argData, ...argFields) {

@@ -428,6 +428,4 @@ Quat.rotate = function(vector, quat) {
 	return new Float32Array([m2[1], m2[2], m2[3]]);
 }
 
-
-
 export {Mat4, Vec3, Quat};
