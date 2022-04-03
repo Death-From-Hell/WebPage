@@ -23,6 +23,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             {name: "translateY", defaultValue: 0},
             {name: "translateZ", defaultValue: 0},
             {name: "linkUrl"},
+            {name: "instantDraw", defaultValue: false},
         );
     }
     async init() {
@@ -82,7 +83,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             name: "Draw Texture",
             textureNode: this.data.textureNode,
             transformNode: translateTexture,
-            instantDraw: true,
+            instantDraw: this.instantDraw,
             eventNode: this.eventNode,
             objectId: this.data.textureNode.id,
         });
@@ -183,6 +184,10 @@ Object.defineProperties(WebPageImageBlockNode.prototype, {
     "linkUrl": {
         get() {return this.__getValue(this.input.linkUrl);},
         set(value) {this.input.linkUrl = value;}
+    },
+    "instantDraw": {
+        get() {return this.__getValue(this.input.instantDraw);},
+        set(value) {this.input.instantDraw = value;}
     },
 });
 
