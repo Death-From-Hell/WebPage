@@ -85,7 +85,6 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             instantDraw: true,
             eventNode: this.eventNode,
             objectId: this.data.textureNode.id,
-            cleanup: () => {console.log("ss");}
         });
         
         if(this.linkUrl && this.__isNode(this.eventNode)) {
