@@ -71,7 +71,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             transformNode: scaleText,
             x: () => this.translateX,
             y: () => this.translateY,
-            z: () => this.translateY,
+            z: () => this.translateZ,
         });
     
         const drawText = this.data.graph.node("DrawTexture", {
