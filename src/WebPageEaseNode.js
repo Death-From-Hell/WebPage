@@ -51,7 +51,6 @@ class WebPageEaseNode extends WebPageBaseNode {
                 value: undefined,
                 state: undefined
             },
-//             deltaValue: this.endValue - this.startValue,
             value: this.startValue,
             parametricValue: 0,
             innerState: "stop",
@@ -66,7 +65,6 @@ class WebPageEaseNode extends WebPageBaseNode {
     }
     __clear() {
         this.data.value = this.startValue;
-//         this.data.deltaValue = this.endValue - this.startValue;
         this.data.parametricValue = 0;
         this.data.iteration.number = 0;
         this.data.timeout.value = 0;
