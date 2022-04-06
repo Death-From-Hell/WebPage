@@ -51,7 +51,7 @@ class WebPageEaseNode extends WebPageBaseNode {
                 value: undefined,
                 state: undefined
             },
-            deltaValue: this.endValue - this.startValue,
+//             deltaValue: this.endValue - this.startValue,
             value: this.startValue,
             parametricValue: 0,
             innerState: "stop",
@@ -66,7 +66,7 @@ class WebPageEaseNode extends WebPageBaseNode {
     }
     __clear() {
         this.data.value = this.startValue;
-        this.data.deltaValue = this.endValue - this.startValue;
+//         this.data.deltaValue = this.endValue - this.startValue;
         this.data.parametricValue = 0;
         this.data.iteration.number = 0;
         this.data.timeout.value = 0;
@@ -385,7 +385,7 @@ class WebPageEaseNode extends WebPageBaseNode {
         if(this.__isEven()) {
             p = 1 - p;
         }
-        this.data.value = this.startValue + p * this.data.deltaValue;
+        this.data.value = this.startValue + p * (this.endValue - this.startValue);
         this.data.parametricValue = argP;
     }
     __calcTimeout() {
