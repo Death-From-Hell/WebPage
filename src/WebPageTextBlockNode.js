@@ -23,6 +23,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             {name: "translateZ", defaultValue: 0},
             {name: "linkUrl"},
             {name: "linkTarget", defaultValue: "_self"},
+            {name: "instantDraw"},
         );
     }
     async init() {
@@ -43,7 +44,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
         this.data.textNode = this.data.graph.node("Text", {
             name: "Text Node",
             update: false,
-            instantDraw: false
+            instantDraw: this.instantDraw
         });
         this.root.addEventListener("resize", () => {this.data.textNode.draw();});
         
@@ -79,7 +80,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             name: "Draw Text",
             textureNode: this.data.textNode,
             transformNode: translateText,
-            instantDraw: true,
+            instantDraw: this.instantDraw,
             eventNode: this.eventNode,
             objectId: this.data.textNode.id,
         });
@@ -188,6 +189,10 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     "linkTarget": {
         get() {return this.__getValue(this.input.linkTarget);},
         set(value) {this.input.linkTarget = value;}
+    },
+    "instantDraw": {
+        get() {return this.__getValue(this.input.instantDraw);},
+        set(value) {this.input.instantDraw = value;}
     },
 });
 
