@@ -22,6 +22,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             {name: "translateY", defaultValue: 0},
             {name: "translateZ", defaultValue: 0},
             {name: "linkUrl"},
+            {name: "linkTarget", defaultValue: "_self"},
         );
     }
     async init() {
@@ -83,6 +84,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             objectId: this.data.textNode.id,
         });
         
+        this.data.aElement = document.createElement("a");
         if(this.linkUrl && this.__isNode(this.eventNode)) {
             this.eventNode.addEventListener({
                 phase: "down",
@@ -99,8 +101,18 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             this.eventNode.addEventListener({
                 phase: "down",
                 func: (e) => {
-                    history.pushState({}, this.title);
-                    location.href = this.linkUrl;
+                    let target;
+                    if(["_blank", "_self", "_parent", "_top"].includes(this.linkTarget)) {
+                        target = this.linkTarget;
+                    } else {
+                        target = "_self";
+                    }
+                    this.data.aElement.target = target;
+                    this.data.aElement.href = this.linkUrl;
+                    if(target != "_blank") {
+                        history.pushState({}, this.title);
+                    }
+                    this.data.aElement.click();
                 },
                 event: "click",
                 objectId: this.data.textNode.id
@@ -172,6 +184,10 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     "linkUrl": {
         get() {return this.__getValue(this.input.linkUrl);},
         set(value) {this.input.linkUrl = value;}
+    },
+    "linkTarget": {
+        get() {return this.__getValue(this.input.linkTarget);},
+        set(value) {this.input.linkTarget = value;}
     },
 });
 
