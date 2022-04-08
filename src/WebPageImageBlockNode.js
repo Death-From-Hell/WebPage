@@ -128,7 +128,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
 //         this.data.graph.showSortedGraph();
     }
     __update() {
-        if(this.enable) {
+        if(this.enable && this.update) {
             this.__setup();
             this.update();
             this.__cleanup();
