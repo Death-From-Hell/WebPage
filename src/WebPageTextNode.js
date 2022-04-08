@@ -22,6 +22,7 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
             {name: "textBaseline", defaultValue: "alphabetic"},
             {name: "textAlign", defaultValue: "left"},
             {name: "text", defaultValue: ""},
+            {name: "fineText"},
             {name: "maxWidth", defaultValue: () => this.gl.canvas.width},
             {name: "shrink", defaultValue: true},
             {name: "grow", defaultValue: true},
@@ -68,7 +69,13 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
             actualWidth = Math.max(actualWidth, lineWidth + this.paddingLeft + this.paddingRight);
         }
         const re=/\r\n|\n\r|\n|\r/g;
-        const lines=this.text.replace(re,"\n").split("\n");
+        let text;
+        if(this.fineText) {
+            text = this.text.replace(/\n\s*\n/g, '\n\n');
+        } else {
+            text = this.text;
+        }
+        const lines=text.replace(re,"\n").split("\n");
         for(const line of lines) {
             const words = line.split(/\s+/).filter(e => e.length > 0);
             let lineWords = "", oldLineWords = "";
@@ -189,6 +196,10 @@ Object.defineProperties(WebPageTextNode.prototype, {
     "text": {
         get() {return this.__getValue(this.input.text);},
         set(value) {this.input.text = value;}
+    },
+    "fineText": {
+        get() {return this.__getValue(this.input.fineText);},
+        set(value) {this.input.fineText = value;}
     },
     "maxWidth": {
         get() {return this.__getValue(this.input.maxWidth);},
