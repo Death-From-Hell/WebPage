@@ -11,7 +11,6 @@ class WebPageTextBlockNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
-            {name: "title", defaultValue: ""},
             {name: "eventNode"},
             {name: "textNodeValue"},
             {name: "pivotPointX", defaultValue: "center"},
@@ -110,9 +109,6 @@ class WebPageTextBlockNode extends WebPageBaseNode {
                     }
                     this.data.aElement.target = target;
                     this.data.aElement.href = this.linkUrl;
-                    if(target != "_blank") {
-                        history.pushState({}, this.title);
-                    }
                     this.data.aElement.click();
                 },
                 event: "click",
@@ -141,10 +137,6 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     },
     "height": {
         get() {return this.data.textNode.height;},
-    },
-    "title": {
-        get() {return this.__getValue(this.input.title);},
-        set(value) {this.input.title = value;}
     },
     "eventNode": {
         get() {return this.__getValue(this.input.eventNode);},

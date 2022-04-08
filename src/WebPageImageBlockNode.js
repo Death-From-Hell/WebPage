@@ -11,7 +11,6 @@ class WebPageImageBlockNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
-            {name: "title", defaultValue: ""},
             {name: "eventNode"},
             {name: "src"},
             {name: "crossOrigin", defaultValue: false},
@@ -114,9 +113,6 @@ class WebPageImageBlockNode extends WebPageBaseNode {
                     }
                     this.data.aElement.target = target;
                     this.data.aElement.href = this.linkUrl;
-                    if(target != "_blank") {
-                        history.pushState({}, this.title);
-                    }
                     this.data.aElement.click();
                 },
                 event: "click",
@@ -144,10 +140,6 @@ Object.defineProperties(WebPageImageBlockNode.prototype, {
     },
     "height": {
         get() {return this.data.textureNode.height;},
-    },
-    "title": {
-        get() {return this.__getValue(this.input.title);},
-        set(value) {this.input.title = value;}
     },
     "src": {
         get() {return this.__getValue(this.input.src);},
