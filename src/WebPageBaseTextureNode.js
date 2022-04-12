@@ -11,13 +11,11 @@ class WebPageBaseTextureNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
-            {name: "update", defaultValue: true},
-            {name: "enable", defaultValue: true},
             {name: "mipmap", defaultValue: true},
             {name: "minFilter"},
-            {name: "magFilter", defaultValue: "linear"},
-            {name: "wrapS", defaultValue: "repeat"},
-            {name: "wrapT", defaultValue: "repeat"},
+            {name: "magFilter"/*, defaultValue: "linear"*/},
+            {name: "wrapS"/*, defaultValue: "repeat"*/},
+            {name: "wrapT"/*, defaultValue: "repeat"*/},
         );
         this.data.texture = undefined;
         this.data.width = undefined;
@@ -36,7 +34,7 @@ class WebPageBaseTextureNode extends WebPageBaseNode {
         return WebPageBaseTextureNode.prototype.isPrototypeOf(argNode);
     }
     __isPowerOfTwo(argValue) {
-        return (argValue & (argValue - 1)) === 0;
+        return argValue && !(argValue & (argValue - 1));
     }
     __checkPowerOfTwo() {
         if(this.__isPowerOfTwo(this.width) && this.__isPowerOfTwo(this.height)) {
@@ -92,7 +90,7 @@ class WebPageBaseTextureNode extends WebPageBaseNode {
             default:
             {
                 if(this.data.mipmapEnable) {
-                    minFilter = this.gl.LINEAR_MIPMAP_LINEAR;
+                    minFilter = this.gl.NEAREST_MIPMAP_LINEAR;
                 } else {
                     minFilter = this.gl.LINEAR;
                 }
@@ -177,14 +175,6 @@ class WebPageBaseTextureNode extends WebPageBaseNode {
     }
 }
 Object.defineProperties(WebPageBaseTextureNode.prototype, {
-    "update": {
-        get() {return this.__getValue(this.input.update);},
-        set(value) {this.input.update = value;}
-    },
-    "enable": {
-        get() {return this.__getValue(this.input.enable);},
-        set(value) {this.input.enable = value;}
-    },
     "texture": {
         get() {return this.data.texture;},
         set(value) {this.data.texture = value;}

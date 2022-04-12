@@ -46,18 +46,29 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
     }
     load() {
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         switch(this.sourceNode.constructor.name) {
+            case "ImageBitmap":
+            {
+                const canvas = document.createElement("canvas");
+                canvas.width = this.sourceNode.width;
+                canvas.height = this.sourceNode.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(this.sourceNode, 0, 0);
+                this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, canvas);
+                this.generateMipmap();
+                break;
+            }
             case "WebPageImageNode":
             {
-                this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-//                 this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+                console.log("2");
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.sourceNode.image);
                 this.generateMipmap();
                 break;
             }
             case "WebPageVideoNode":
             {
-                this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+                console.log("3");
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.sourceNode.video);
                 this.generateMipmap();
                 break;
