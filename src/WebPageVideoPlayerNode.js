@@ -280,7 +280,6 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             name: "Video Node",
             src: this.src,
         }).load();
-        videoNode.video.volume = 0.5;
         const videoTexture = this.data.graph.node("Texture", {
             name: "Video Texture",
             sourceNode: videoNode,
