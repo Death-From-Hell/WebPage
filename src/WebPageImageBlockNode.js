@@ -11,7 +11,6 @@ class WebPageImageBlockNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
-            {name: "eventNode"},
             {name: "src"},
             {name: "crossOrigin", defaultValue: false},
             {name: "pivotPointX", defaultValue: "center"},
@@ -21,6 +20,8 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             {name: "translateX", defaultValue: 0},
             {name: "translateY", defaultValue: 0},
             {name: "translateZ", defaultValue: 0},
+            {name: "eventNode"},
+            {name: "objectId", defaultValue: this.id},
             {name: "linkUrl"},
             {name: "linkTarget", defaultValue: "_self"},
             {name: "instantDraw"},
@@ -41,28 +42,24 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             name: "Graph",
             clear: false
         });
-        
         this.data.imageNode = this.data.graph.node("Image", {
             name: "Image Node",
             src: this.src,
             crossOrigin: this.crossOrigin
         });
         await this.data.imageNode.load().catch(e => console.warn(e));
-
         this.data.textureNode = this.data.graph.node("Texture", {
             name: "Texture Node",
             sourceNode: this.data.imageNode,
             instantLoad: true,
             update: false
         });
-        
         const pivotPointTexture = this.data.graph.node("PivotPoint", {
             name: "Pivot Point Texture",
             x: this.pivotPointX,
             y: this.pivotPointY,
             objectNode: this.data.textureNode,
         });
-    
         const scaleTexture = this.data.graph.node("Scale", {
             name: "Scale Texture",
             transformNode: pivotPointTexture,
@@ -70,7 +67,6 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             y: () => this.scaleY,
             z: 1,
         });
-
         const translateTexture = this.data.graph.node("Translate", {
             name: "Translate Texture",
             transformNode: scaleTexture,
@@ -78,45 +74,31 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             y: () => this.translateY,
             z: () => this.translateZ,
         });
-    
         const drawTexture = this.data.graph.node("DrawTexture", {
             name: "Draw Texture",
             textureNode: this.data.textureNode,
             transformNode: translateTexture,
             instantDraw: this.instantDraw,
             eventNode: this.eventNode,
-            objectId: this.data.textureNode.id,
+            objectId: this.objectId,
         });
-        
-//         this.data.aElement = document.createElement("a");
         if(this.linkUrl && this.__isNode(this.eventNode)) {
             this.eventNode.style({
                 cursor: "pointer",
-                objectId: this.data.textureNode.id
+                objectId: this.objectId
             });
             this.eventNode.addEventListener({
                 phase: "down",
                 func: (e) => {
                     this.eventNode.link({url: this.linkUrl, target: this.linkTarget});
-                    /*
-                    let target;
-                    if(["_blank", "_self", "_parent", "_top"].includes(this.linkTarget)) {
-                        target = this.linkTarget;
-                    } else {
-                        target = "_self";
-                    }
-                    this.data.aElement.target = target;
-                    this.data.aElement.href = this.linkUrl;
-                    this.data.aElement.click();
-                    */
                 },
                 event: "click",
-                objectId: this.data.textureNode.id
+                objectId: this.objectId
             });
         }
-        
         this.data.graph.sort();
 //         this.data.graph.showSortedGraph();
+        return this;
     }
     __update() {
         if(this.enable && this.update) {
@@ -127,6 +109,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
     }
     update() {
         this.data.graph.__update();
+        return this;
     }
 }
 Object.defineProperties(WebPageImageBlockNode.prototype, {
@@ -143,10 +126,6 @@ Object.defineProperties(WebPageImageBlockNode.prototype, {
     "crossOrigin": {
         get() {return this.__getValue(this.input.crossOrigin);},
         set(value) {this.input.crossOrigin = value;}
-    },
-    "eventNode": {
-        get() {return this.__getValue(this.input.eventNode);},
-        set(value) {this.input.eventNode = value;}
     },
     "textNodeValue": {
         get() {return this.__getValue(this.input.textNodeValue);},
@@ -179,6 +158,14 @@ Object.defineProperties(WebPageImageBlockNode.prototype, {
     "translateZ": {
         get() {return this.__getValue(this.input.translateZ);},
         set(value) {this.input.translateZ = value;}
+    },
+    "eventNode": {
+        get() {return this.__getValue(this.input.eventNode);},
+        set(value) {this.input.eventNode = value;}
+    },
+    "objectId": {
+        get() {return this.__getValue(this.input.objectId);},
+        set(value) {this.input.objectId = value;}
     },
     "linkUrl": {
         get() {return this.__getValue(this.input.linkUrl);},

@@ -21,6 +21,8 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             {name: "translateZ", defaultValue: 0},
             {name: "eventNode"},
             {name: "objectId", defaultValue: this.id},
+            {name: "linkUrl"},
+            {name: "linkTarget", defaultValue: "_self"},
             {name: "instantDraw"},
         );
     }
@@ -77,6 +79,20 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             eventNode: () => this.eventNode,
             objectId: () => this.objectId,
         });
+        if(this.linkUrl && this.__isNode(this.eventNode)) {
+            this.eventNode.style({
+                cursor: "pointer",
+                objectId: this.objectId
+            });
+            this.eventNode.addEventListener({
+                phase: "down",
+                func: (e) => {
+                    this.eventNode.link({url: this.linkUrl, target: this.linkTarget});
+                },
+                event: "click",
+                objectId: this.objectId
+            });
+        }
         this.data.graph.sort();
 //         this.data.graph.showSortedGraph();
         return this;
@@ -88,11 +104,10 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             this.__cleanup();
         }
     }
-    draw() {
+    update() {
         this.data.graph.__update();
         return this;
     }
-    
 }
 Object.defineProperties(WebPageTextBlockNode.prototype, {
     "width": {
@@ -100,14 +115,6 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     },
     "height": {
         get() {return this.data.textNode.height;},
-    },
-    "eventNode": {
-        get() {return this.__getValue(this.input.eventNode);},
-        set(value) {this.input.eventNode = value;}
-    },
-    "objectId": {
-        get() {return this.__getValue(this.input.objectId);},
-        set(value) {this.input.objectId = value;}
     },
     "textNodeValue": {
         get() {return this.__getValue(this.input.textNodeValue);},
@@ -141,13 +148,25 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
         get() {return this.__getValue(this.input.translateZ);},
         set(value) {this.input.translateZ = value;}
     },
-    "instantDraw": {
-        get() {return this.__getValue(this.input.instantDraw);},
-        set(value) {this.input.instantDraw = value;}
-    },
     "eventNode": {
         get() {return this.__getValue(this.input.eventNode);},
         set(value) {this.input.eventNode = value;}
+    },
+    "objectId": {
+        get() {return this.__getValue(this.input.objectId);},
+        set(value) {this.input.objectId = value;}
+    },
+    "linkUrl": {
+        get() {return this.__getValue(this.input.linkUrl);},
+        set(value) {this.input.linkUrl = value;}
+    },
+    "linkTarget": {
+        get() {return this.__getValue(this.input.linkTarget);},
+        set(value) {this.input.linkTarget = value;}
+    },
+    "instantDraw": {
+        get() {return this.__getValue(this.input.instantDraw);},
+        set(value) {this.input.instantDraw = value;}
     },
 });
 
