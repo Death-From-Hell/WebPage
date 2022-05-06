@@ -90,16 +90,8 @@ class WebPageImageBlockNode extends WebPageBaseNode {
         
         this.data.aElement = document.createElement("a");
         if(this.linkUrl && this.__isNode(this.eventNode)) {
-            this.eventNode.addEventListener({
-                phase: "down",
-                func: (e) => {e.cursor("pointer");},
-                event: "mouseover",
-                objectId: this.data.textureNode.id
-            });
-            this.eventNode.addEventListener({
-                phase: "down",
-                func: (e) => {e.cursor("default");},
-                event: "mouseout",
+            this.eventNode.style({
+                cursor: "pointer",
                 objectId: this.data.textureNode.id
             });
             this.eventNode.addEventListener({
