@@ -100,7 +100,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
     __update() {
         if(this.enable && this.update) {
             this.__setup();
-            this.draw();
+            this.update();
             this.__cleanup();
         }
     }
