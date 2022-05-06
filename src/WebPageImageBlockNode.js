@@ -97,6 +97,8 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             this.eventNode.addEventListener({
                 phase: "down",
                 func: (e) => {
+                    eventNode.link({url: this.linkUrl, target: this.linkTarget});
+                    /*
                     let target;
                     if(["_blank", "_self", "_parent", "_top"].includes(this.linkTarget)) {
                         target = this.linkTarget;
@@ -106,6 +108,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
                     this.data.aElement.target = target;
                     this.data.aElement.href = this.linkUrl;
                     this.data.aElement.click();
+                    */
                 },
                 event: "click",
                 objectId: this.data.textureNode.id
