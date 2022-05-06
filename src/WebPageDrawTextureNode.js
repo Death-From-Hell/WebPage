@@ -14,6 +14,7 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
         this.__loadInputVar(argObject,
             {name: "textureNode"},
             {name: "transformNode"},
+            {name: "transformMatrix"},
             {name: "projectionNode"},
             {name: "eventNode"},
             {name: "objectId"},
@@ -148,6 +149,8 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
         let transformMatrix;
         if(this.__isNode(this.transformNode)) {
             transformMatrix = this.transformNode.matrix;
+        } else if (this.__isMatrix(this.transformMatrix)) {
+            transformMatrix = this.transformMatrix;
         } else {
             transformMatrix = Mat4.identity();
         }
@@ -358,6 +361,10 @@ Object.defineProperties(WebPageDrawTextureNode.prototype, {
     "transformNode": {
         get() {return this.__getValue(this.input.transformNode);},
         set(value) {this.input.transformNode = value;}
+    },
+    "transformMatrix": {
+        get() {return this.__getValue(this.input.transformMatrix);},
+        set(value) {this.input.transformMatrix = value;}
     },
     "projectionNode": {
         get() {return this.__getValue(this.input.projectionNode);},

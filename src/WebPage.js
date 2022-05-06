@@ -40,6 +40,7 @@ class WebPage extends WebPageBaseNode {
             {name: "clearColor", defaultValue: [1,1,1,1]},
             {name: "clearDepth", defaultValue: 1},
             {name: "clearStencil", defaultValue: 0},
+            {name: "preserveDrawingBuffer", defaultValue: false},
         );
         if(!this.canvas) {
             this.canvas = document.createElement("canvas");
@@ -47,7 +48,7 @@ class WebPage extends WebPageBaseNode {
             this.canvas.height = window.innerHeight;
             document.documentElement.appendChild(this.canvas);
         }
-        this.gl = this.canvas.getContext("webgl", {depth: true, stencil: true, alpha: true, premultipliedAlpha: false });
+        this.gl = this.canvas.getContext("webgl", {depth: true, stencil: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: this.input.preserveDrawingBuffer});
         if(!this.gl) {
             WebPageError("Невозможно инициализировать webgl.");
         }
@@ -112,7 +113,7 @@ class WebPage extends WebPageBaseNode {
         return this;
     }
     cullFace(argCullFace = this.input.cullFace) {
-        switch(argCullFace.toLowerCase()) {
+        switch(String(argCullFace).toLowerCase()) {
             case "front":
                 this.gl.cullFace(this.gl.FRONT);
                 break;

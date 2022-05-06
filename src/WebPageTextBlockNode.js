@@ -11,8 +11,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
-            {name: "eventNode"},
-            {name: "textNodeValue"},
+            {name: "textNodeValue", defaultValue: {}},
             {name: "pivotPointX", defaultValue: "center"},
             {name: "pivotPointY", defaultValue: "center"},
             {name: "scaleX", defaultValue: 1},
@@ -20,8 +19,8 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             {name: "translateX", defaultValue: 0},
             {name: "translateY", defaultValue: 0},
             {name: "translateZ", defaultValue: 0},
-            {name: "linkUrl"},
-            {name: "linkTarget", defaultValue: "_self"},
+            {name: "eventNode"},
+            {name: "objectId", defaultValue: this.id},
             {name: "instantDraw"},
         );
     }
@@ -39,26 +38,23 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             name: "Graph",
             clear: false
         });
-        
         this.data.textNode = this.data.graph.node("Text", {
             name: "Text Node",
-            update: false,
-            instantDraw: this.instantDraw
+            update: () => this.update,
+            instantDraw: () => this.instantDraw,
+            setup: () => {
+                for(const [key, value] of Object.entries(this.textNodeValue)) {
+                    this.data.textNode[key] = value;
+                }
+            },
         });
         this.root.addEventListener("resize", () => {this.data.textNode.draw();});
-        
-        for(const [key, value] of Object.entries(this.textNodeValue)) {
-            this.data.textNode[key] = value;
-        }
-        this.data.textNode.draw();
-        
         const pivotPointText = this.data.graph.node("PivotPoint", {
             name: "Pivot Point Text",
-            x: this.pivotPointX,
-            y: this.pivotPointY,
+            x: () => this.pivotPointX,
+            y: () => this.pivotPointY,
             objectNode: this.data.textNode,
         });
-    
         const scaleText = this.data.graph.node("Scale", {
             name: "Scale Text",
             transformNode: pivotPointText,
@@ -66,7 +62,6 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             y: () => this.scaleY,
             z: 1,
         });
-
         const translateText = this.data.graph.node("Translate", {
             name: "Translate Text",
             transformNode: scaleText,
@@ -74,60 +69,28 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             y: () => this.translateY,
             z: () => this.translateZ,
         });
-    
         const drawText = this.data.graph.node("DrawTexture", {
             name: "Draw Text",
             textureNode: this.data.textNode,
             transformNode: translateText,
-            instantDraw: this.instantDraw,
-            eventNode: this.eventNode,
-            objectId: this.data.textNode.id,
+            instantDraw: () => this.instantDraw,
+            eventNode: () => this.eventNode,
+            objectId: () => this.objectId,
         });
-        
-        this.data.aElement = document.createElement("a");
-        if(this.linkUrl && this.__isNode(this.eventNode)) {
-            this.eventNode.addEventListener({
-                phase: "down",
-                func: (e) => {e.cursor("pointer");},
-                event: "mouseover",
-                objectId: this.data.textNode.id
-            });
-            this.eventNode.addEventListener({
-                phase: "down",
-                func: (e) => {e.cursor("default");},
-                event: "mouseout",
-                objectId: this.data.textNode.id
-            });
-            this.eventNode.addEventListener({
-                phase: "down",
-                func: (e) => {
-                    let target;
-                    if(["_blank", "_self", "_parent", "_top"].includes(this.linkTarget)) {
-                        target = this.linkTarget;
-                    } else {
-                        target = "_self";
-                    }
-                    this.data.aElement.target = target;
-                    this.data.aElement.href = this.linkUrl;
-                    this.data.aElement.click();
-                },
-                event: "click",
-                objectId: this.data.textNode.id
-            });
-        }
-        
         this.data.graph.sort();
 //         this.data.graph.showSortedGraph();
+        return this;
     }
     __update() {
         if(this.enable && this.update) {
             this.__setup();
-            this.update();
+            this.draw();
             this.__cleanup();
         }
     }
-    update() {
+    draw() {
         this.data.graph.__update();
+        return this;
     }
     
 }
@@ -141,6 +104,10 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     "eventNode": {
         get() {return this.__getValue(this.input.eventNode);},
         set(value) {this.input.eventNode = value;}
+    },
+    "objectId": {
+        get() {return this.__getValue(this.input.objectId);},
+        set(value) {this.input.objectId = value;}
     },
     "textNodeValue": {
         get() {return this.__getValue(this.input.textNodeValue);},
@@ -173,14 +140,6 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     "translateZ": {
         get() {return this.__getValue(this.input.translateZ);},
         set(value) {this.input.translateZ = value;}
-    },
-    "linkUrl": {
-        get() {return this.__getValue(this.input.linkUrl);},
-        set(value) {this.input.linkUrl = value;}
-    },
-    "linkTarget": {
-        get() {return this.__getValue(this.input.linkTarget);},
-        set(value) {this.input.linkTarget = value;}
     },
     "instantDraw": {
         get() {return this.__getValue(this.input.instantDraw);},

@@ -91,17 +91,17 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
             pushLine(lineWords);
         }
         if((actualWidth > this.maxWidth && this.grow) || (actualWidth < this.maxWidth && this.shrink)) {
-            this.width = actualWidth;
+            this.width = Math.max(actualWidth, 1);
         } else {
             this.width = this.maxWidth;
         }
         this.height = this.paddingTop + this.data.lineHeight * this.data.textLines.length + this.paddingBottom;
     }
     __drawText() {
-//         this.gl.disable(this.gl.BLEND);
         this.data.canvas.width = this.width;
         this.data.canvas.height = this.height;
         this.data.context.globalAlpha = this.alpha;
+        this.data.context.clearRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         this.data.context.fillStyle = this.backgroundColor;
         this.data.context.fillRect(0, 0, this.data.canvas.width, this.data.canvas.height);
         let position;
@@ -134,7 +134,6 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         for(const entry of this.data.textLines) {
             this.data.context.fillText(entry.line, position, this.paddingTop + this.data.lineHeight * i++, Math.max(entry.width, widthWithoutPadding));
         }
-//         this.gl.enable(this.gl.BLEND);
     }
     __update() {
         if(this.enable && this.update) {
@@ -150,6 +149,7 @@ class WebPageTextNode extends WebPageFramebuffer2dNode {
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.data.canvas);
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        return this;
     }
 }
 Object.defineProperties(WebPageTextNode.prototype, {

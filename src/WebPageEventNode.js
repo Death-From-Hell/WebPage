@@ -54,7 +54,9 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
+            style: new Map()
         });
+        this.data.aElement = document.createElement("a");
         this.__init();
     }
     addEventListener(argData) {
@@ -97,13 +99,53 @@ class WebPageEventNode extends WebPageBaseNode {
             eventSubdata = eventData.up;
         }
         const id = argData.objectId;
-        if(!eventSubdata.has(id)) {
-            eventSubdata.set(id, new Set());
-        }
-        const set = eventSubdata.get(id);
         const func = argData.func 
-        set.add(func);
+        const setFunc = (id) => {
+            if(!eventSubdata.has(id)) {
+                eventSubdata.set(id, new Set());
+            }
+            eventSubdata.get(id).add(func);
+        }
+        if(typeof id === "object") {
+            for(const element of Array.from(id)) {
+                setFunc(element);
+            }
+        } else {
+            setFunc(id);
+        }
         return true;
+    }
+    setData(argData) {
+        this.data.object.set(argData.id, {maybeDelete: false, data: argData.data});
+    }
+    style(argData) {
+        const id = argData.objectId;
+        const cursor = argData.cursor;
+        const setFunc = (id) => {
+            if(!eventSubdata.has(id)) {
+                eventSubdata.set(id, new Set());
+            }
+            eventSubdata.get(id).add(func);
+        }
+        if(typeof id === "object") {
+            for(const element of Array.from(id)) {
+                this.data.style.set(element, {cursor: cursor});
+            }
+        } else {
+            this.data.style.set(id, {cursor: cursor});
+        }
+    }
+    link(argData) {
+        const url = argData.url;
+        let target;
+        if(["_blank", "_self", "_parent", "_top"].includes(argData.target)) {
+            target = argData.target;
+        } else {
+            target = "_self";
+        }
+        this.data.aElement.target = target;
+        this.data.aElement.href = this.linkUrl;
+        this.data.aElement.click();
     }
     __init() {
         this.gl.canvas.addEventListener("click", (e) => {
@@ -111,6 +153,7 @@ class WebPageEventNode extends WebPageBaseNode {
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
             this.__run({
+                originalEvent: e,
                 event: "click",
                 objects: objects,
                 eventData: this.data.eventClick,
@@ -122,6 +165,7 @@ class WebPageEventNode extends WebPageBaseNode {
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
             this.__run({
+                originalEvent: e,
                 event: "dblclick",
                 objects: objects,
                 eventData: this.data.eventDblclick,
@@ -131,7 +175,7 @@ class WebPageEventNode extends WebPageBaseNode {
         this.gl.canvas.addEventListener("mousemove", (e) => {
             const position = this.__getMousePosition(e, true);
             const coords = this.__getCoords(position);
-            const objects = this.__getObjects(coords);
+            const objects = this.__getObjects(coords).sort((a, b) => b.z - a.z);
             const objectsId = objects.map(function(e) {return e.id;});
             const overObjects = [];
             const outObjects = [];
@@ -145,19 +189,31 @@ class WebPageEventNode extends WebPageBaseNode {
                     outObjects.push(object);
                 }
             }
+            let styleCursor = "default";
+            for(const object of objects) {
+                if(this.data.style.has(object.id)) {
+                    styleCursor = this.data.style.get(object.id).cursor;
+                }
+            }
+            if(window.getComputedStyle(this.gl.canvas)["cursor"] != styleCursor) {
+                this.gl.canvas.style.cursor = styleCursor;
+            }
             this.__run({
+                originalEvent: e,
                 event: "mousemove",
                 objects: objects,
                 eventData: this.data.eventMousemove,
                 position: position,
             });
             this.__run({
+                originalEvent: e,
                 event: "mouseout",
                 objects: outObjects,
                 eventData: this.data.eventMouseout,
                 position: position,
             });
             this.__run({
+                originalEvent: e,
                 event: "mouseover",
                 objects: overObjects,
                 eventData: this.data.eventMouseover,
@@ -171,6 +227,7 @@ class WebPageEventNode extends WebPageBaseNode {
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
             this.__run({
+                originalEvent: e,
                 event: "contextmenu",
                 objects: objects,
                 eventData: this.data.eventContextmenu,
@@ -182,6 +239,7 @@ class WebPageEventNode extends WebPageBaseNode {
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
             this.__run({
+                originalEvent: e,
                 event: "mousedown",
                 objects: objects,
                 eventData: this.data.eventMousedown,
@@ -193,6 +251,7 @@ class WebPageEventNode extends WebPageBaseNode {
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
             this.__run({
+                originalEvent: e,
                 event: "mouseup",
                 objects: objects,
                 eventData: this.data.eventMouseup,
@@ -204,6 +263,7 @@ class WebPageEventNode extends WebPageBaseNode {
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
             this.__run({
+                originalEvent: e,
                 event: "wheel",
                 objects: objects,
                 eventData: this.data.eventWheel,
@@ -231,18 +291,18 @@ class WebPageEventNode extends WebPageBaseNode {
             if(eventData.down.has(object.id)) {
                 const set = eventData.down.get(object.id);
                 const eventObject = {
+                    originalEvent: argData.originalEvent,
                     event: argData.event,
                     objectId: object.id,
                     phase: "down",
                     u: object.u,
                     v: object.v,
-                    posX: position.x,
-                    posY: position.y,
+                    canvasX: position.x,
+                    canvasY: position.y,
                     coordX: object.x,
                     coordY: object.y,
                     coordZ: object.z,
                     stopPropagation: () => {stopProp = true;},
-                    cursor: (e) => {this.gl.canvas.style.cursor = e;}
                 };
                 if(argData.hasOwnProperty("properties")) {
                     Object.assign(eventObject, argData.properties);
@@ -263,17 +323,18 @@ class WebPageEventNode extends WebPageBaseNode {
                 if(eventData.up.has(object.id)) {
                     const set = eventData.up.get(object.id);
                     const eventObject = {
+                        originalEvent: argData.originalEvent,
+                        event: argData.event,
                         objectId: object.id,
                         phase: "up",
                         u: object.u,
                         v: object.v,
-                        posX: position.x,
-                        posY: position.y,
+                        canvasX: position.x,
+                        canvasY: position.y,
                         coordX: object.x,
                         coordY: object.y,
                         coordZ: object.z,
                         stopPropagation: () => {stopProp = true;},
-                        cursor: (e) => {this.gl.canvas.style.cursor = e;}
                     };
                     if(argData.hasOwnProperty("properties")) {
                         Object.assign(eventObject, argData.properties);
@@ -300,9 +361,6 @@ class WebPageEventNode extends WebPageBaseNode {
         this.data.object.forEach((value) => {
             value.maybeDelete = true;
         });
-    }
-    setData(argData) {
-        this.data.object.set(argData.id, {maybeDelete: false, data: argData.data});
     }
     __getMousePosition(event, swapY = false) {
         const rect = event.target.getBoundingClientRect();

@@ -13,15 +13,18 @@ class WebPagePivotPointNode extends WebPageBaseNode {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
             {name: "transformNode"},
+            {name: "transformMatrix"},
+            {name: "instantCalculate", defaultValue: true},
             {name: "objectNode"},
             {name: "x", defaultValue: 0},
             {name: "y", defaultValue: 0},
         );
-        this.data.matrix = Mat4.identity();
-        if(this.enable) {
+        if(this.instantCalculate && this.enable) {
             this.__setup();
             this.calculate();
             this.__cleanup();
+        } else {
+            this.data.matrix = Mat4.identity();
         }
     }
     calculate() {
@@ -31,6 +34,7 @@ class WebPagePivotPointNode extends WebPageBaseNode {
         const isObjectNode = this.__isNode(this.objectNode);
         switch(this.__getType(x)) {
             case "number":
+            case "function":
                 dx = x;
                 break;
             case "string":
@@ -51,6 +55,7 @@ class WebPagePivotPointNode extends WebPageBaseNode {
         }
         switch(this.__getType(y)) {
             case "number":
+            case "function":
                 dy = y;
                 break;
             case "string":
@@ -71,12 +76,15 @@ class WebPagePivotPointNode extends WebPageBaseNode {
         }
         if(this.__isNode(this.transformNode)) {
             this.data.matrix = Mat4.multiplyByMatrix(Mat4.translate(-dx, -dy, 0), this.transformNode.matrix);
+        } else if (this.__isMatrix(this.transformMatrix)) {
+            this.data.matrix = Mat4.multiplyByMatrix(Mat4.translate(-dx, -dy, 0), this.transformMatrix);
         } else {
             this.data.matrix = Mat4.translate(-dx, -dy, 0);
         }
+        return this;
     }
     __update() {
-        if(this.enable && this.update) {
+        if(this.update && this.enable) {
             this.__setup();
             this.calculate();
             this.__cleanup();
@@ -87,6 +95,14 @@ Object.defineProperties(WebPagePivotPointNode.prototype, {
     "transformNode": {
         get() {return this.__getValue(this.input.transformNode);},
         set(value) {this.input.transformNode = value;}
+    },
+    "transformMatrix": {
+        get() {return this.__getValue(this.input.transformMatrix);},
+        set(value) {this.input.transformMatrix = value;}
+    },
+    "instantCalculate": {
+        get() {return this.__getValue(this.input.instantCalculate);},
+        set(value) {this.input.instantCalculate = value;}
     },
     "objectNode": {
         get() {return this.__getValue(this.input.objectNode);},
@@ -107,6 +123,8 @@ Object.defineProperties(WebPagePivotPointNode.prototype, {
             } else {
                 if(this.__isNode(this.transformNode)) {
                     return this.transformNode.matrix;
+                } else if (this.__isMatrix(this.transformMatrix)) {
+                    return this.transformMatrix;
                 } else {
                     return Mat4.identity();
                 }

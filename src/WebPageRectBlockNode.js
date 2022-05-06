@@ -21,6 +21,8 @@ class WebPageRectBlockNode extends WebPageBaseNode {
             {name: "translateX", defaultValue: 0},
             {name: "translateY", defaultValue: 0},
             {name: "translateZ", defaultValue: 0},
+            {name: "eventNode"},
+            {name: "objectId", defaultValue: this.id},
             {name: "instantDraw"},
         );
     }
@@ -39,19 +41,20 @@ class WebPageRectBlockNode extends WebPageBaseNode {
             clear: false
         });
         
-        this.data.rectNode = this.data.graph.node("Rect", {
+        const rectNode = this.data.graph.node("Rect", {
             name: "Rect Node",
             width: () => this.width,
             height: () => this.height,
             color: () => this.color,
-            instantDraw: this.instantDraw
+            instantDraw: () => this.instantDraw,
+//             cleanup: () => {console.log(this.name, this.clearColor);}
         });
 
         const pivotPointRect = this.data.graph.node("PivotPoint", {
             name: "Pivot Point Rect",
-            x: this.pivotPointX,
-            y: this.pivotPointY,
-            objectNode: this.data.rectNode,
+            x: () => this.pivotPointX,
+            y: () => this.pivotPointY,
+            objectNode: rectNode,
         });
     
         const scaleRect = this.data.graph.node("Scale", {
@@ -72,23 +75,28 @@ class WebPageRectBlockNode extends WebPageBaseNode {
     
         const drawRect = this.data.graph.node("DrawTexture", {
             name: "Draw Rect",
-            textureNode: this.data.rectNode,
+            textureNode: rectNode,
             transformNode: translateRect,
-            instantDraw: this.instantDraw,
+            instantDraw: () => this.instantDraw,
+            eventNode: () => this.eventNode,
+            objectId: () => this.objectId,
+//             cleanup: () => {console.log(this.name, this.update);}
         });
         
         this.data.graph.sort();
 //         this.data.graph.showSortedGraph();
+        return this;
     }
     __update() {
         if(this.enable && this.update) {
             this.__setup();
-            this.update();
+            this.draw();
             this.__cleanup();
         }
     }
-    update() {
+    draw() {
         this.data.graph.__update();
+        return this;
     }
     
 }
@@ -132,6 +140,14 @@ Object.defineProperties(WebPageRectBlockNode.prototype, {
     "translateZ": {
         get() {return this.__getValue(this.input.translateZ);},
         set(value) {this.input.translateZ = value;}
+    },
+    "eventNode": {
+        get() {return this.__getValue(this.input.eventNode);},
+        set(value) {this.input.eventNode = value;}
+    },
+    "objectId": {
+        get() {return this.__getValue(this.input.objectId);},
+        set(value) {this.input.objectId = value;}
     },
     "instantDraw": {
         get() {return this.__getValue(this.input.instantDraw);},

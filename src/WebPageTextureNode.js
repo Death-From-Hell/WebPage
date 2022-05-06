@@ -61,14 +61,12 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
             }
             case "WebPageImageNode":
             {
-                console.log("2");
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.sourceNode.image);
                 this.generateMipmap();
                 break;
             }
             case "WebPageVideoNode":
             {
-                console.log("3");
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.sourceNode.video);
                 this.generateMipmap();
                 break;

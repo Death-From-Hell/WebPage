@@ -21,6 +21,9 @@ class WebPageBaseNode {
             {name: "enable", defaultValue: true},
         );
     }
+    __getRandomString() {
+        return (Math.random() + 1).toString(36).substring(2);
+    }
     __getType(arg) {
         // number, boolean, string, array, object, function, undefined, window, htmldocument и т.д.
         return Object.prototype.toString.call(arg).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
@@ -66,6 +69,9 @@ class WebPageBaseNode {
     }
     __isNode(argNode) {
         return WebPageBaseNode.prototype.isPrototypeOf(argNode);
+    }
+    __isMatrix(argMatrix) {
+        return argMatrix instanceof Float32Array && argMatrix.length === 16;
     }
     __getParentNodes() {
         const nodes = new Set();

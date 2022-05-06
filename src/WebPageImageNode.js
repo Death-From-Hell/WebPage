@@ -12,7 +12,7 @@ class WebPageImageNode extends WebPageBaseNode {
         super(argObject, argDataVar);
         this.__loadInputVar(argObject,
             {name: "src"},
-            {name: "crossOrigin", defaultValue: false},
+            {name: "crossOrigin", defaultValue: "anonymous"},
         );
         this.__loadEvents(argObject,
             {name: "onloadstart"},
@@ -21,9 +21,7 @@ class WebPageImageNode extends WebPageBaseNode {
             {name: "onerror"},
         );
         this.data.image = new Image();
-        if(this.crossOrigin) {
-            this.data.image.crossOrigin = "Anonymous";
-        }
+        this.data.image.crossOrigin = this.crossOrigin;
     }
     load() {
         this.trigger("onloadstart");
