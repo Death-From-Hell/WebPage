@@ -97,7 +97,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             this.eventNode.addEventListener({
                 phase: "down",
                 func: (e) => {
-                    eventNode.link({url: this.linkUrl, target: this.linkTarget});
+                    this.eventNode.link({url: this.linkUrl, target: this.linkTarget});
                     /*
                     let target;
                     if(["_blank", "_self", "_parent", "_top"].includes(this.linkTarget)) {
