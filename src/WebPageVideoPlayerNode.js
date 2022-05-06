@@ -19,6 +19,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             {name: "margin", defaultValue: 10},
             {name: "maxWidth", defaultValue: () => window.innerWidth},
             {name: "maxHeight", defaultValue: () => window.innerHeight},
+            {name: "eventNode"},
         );
         Object.assign(this.data, {
             width: undefined,
@@ -117,26 +118,31 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                 document.exitFullscreen();
             }
         }
-        await this.root.importNode(
+        const nodes = [
             "graph",
             "ease",
             "function",
             "video",
             "texture",
             "drawTexture",
-            "event",
+//             "event",
             "canvas",
             "adjustment",
             "rect",
             "text",
-            "transformForest",
-        );
+            "transformForest",        
+        ];
+        if(!this.__isNode(this.eventNode)) {
+            nodes.push("event");
+        }
+        await this.root.importNode(...nodes);
+        
         this.data.graph = this.root.node("Graph", {
             name: "Graph",
             clear: false
         });
         
-        const eventNode = this.data.graph.node("Event", {
+        this.data.eventNode = this.__isNode(this.eventNode) ? this.eventNode : this.data.graph.node("Event", {
             name: "Event",
             cullFace: "back",
         });
@@ -378,7 +384,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
 //             color: [120,0,0,1],
             instantDraw: true,
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {e.stopPropagation();},
             event: "mousedown",
@@ -421,13 +427,13 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             const v1 = Math.min(Math.max(0, v), 1);
             videoNode.video.volume = v1;
         }
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {setVolume(e.u); runtime.volumeControl.change = true;} e.stopPropagation();},
             event: "mousedown",
             objectId: [volumeControl.id]
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {
                 if(runtime.volumeControl.change) {
@@ -439,7 +445,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             event: "mousemove",
             objectId: [volumeControl.id]
         });
-        eventNode.style({
+        this.data.eventNode.style({
             cursor: "pointer",
             objectId: volumeControl.id
         });
@@ -488,13 +494,13 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             const v = (u * (1 + 2 * m) - m) * duration;
             return Math.min(Math.max(0, v), duration);
         }
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.currentTime = calculateTime(e.u); runtime.timeLine.seeking = true;} e.stopPropagation();},
             event: "mousedown",
             objectId: timeLine.id
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {
                 const currentTime = calculateTime(e.u);
@@ -505,19 +511,19 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             event: "mousemove",
             objectId: timeLine.id
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {runtime.timeLineTitle.enable = true;},
             event: "mouseover",
             objectId: timeLine.id
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {runtime.timeLineTitle.enable = false;},
             event: "mouseout",
             objectId: timeLine.id
         });
-        eventNode.style({
+        this.data.eventNode.style({
             cursor: "pointer",
             objectId: timeLine.id
         });
@@ -703,7 +709,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             transformMatrix: () => tForest.matrix("Translate Background Container"),
             instantDraw: true,
             enable: () => document.fullscreenElement,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: bgContainer.id,
             parentNodes: [tForest],
         });
@@ -712,7 +718,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             textureNode: videoTexture,
             instantDraw: false,
             transformMatrix: () => tForest.matrix("Pivot Point Video"),
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: videoTexture.id,
             parentNodes: [drawBgContainer, tForest],
         });
@@ -728,7 +734,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             textureNode: controlContainer,
             transformMatrix: () => tForest.matrix("Pivot Point Control Container"),
             instantDraw: true,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: controlContainer.id,
             parentNodes: [drawVideo, tForest],
         });
@@ -738,7 +744,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             transformMatrix: () => tForest.matrix("Translate Volume Control"),
             instantDraw: true,
             enable: () => runtime.controlContainer.enable,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: volumeControl.id,
             parentNodes: [drawControlContainer, tForest],
         });
@@ -748,7 +754,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             transformMatrix: () => tForest.matrix("Pivot Point Time Line"),
             instantDraw: true,
             enable: () => runtime.controlContainer.enable,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: timeLine.id,
             parentNodes: [drawControlContainer, tForest],
         });
@@ -780,7 +786,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             },
             transformMatrix: () => tForest.matrix("Translate Button 1"),
             instantDraw: true,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: () => videoNode.video.paused ? pauseButton.id : playButton.id,
             enable: () => runtime.controlContainer.enable,
             parentNodes: [drawControlContainer, tForest],
@@ -790,7 +796,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             textureNode: () => videoNode.video.muted ? muteButton : unmuteButton,
             transformMatrix: () => tForest.matrix("Translate Button 2"),
             instantDraw: true,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: () => videoNode.video.muted ? muteButton.id : unmuteButton.id,
             enable: () => runtime.controlContainer.enable,
             parentNodes: [drawControlContainer, tForest]
@@ -800,52 +806,52 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             textureNode: () => document.fullscreenElement ? fullscreenExitButton : fullscreenButton,
             transformMatrix: () => tForest.matrix("Scale Button 3"),
             instantDraw: true,
-            eventNode: eventNode,
+            eventNode: this.data.eventNode,
             objectId: () => document.fullscreenElement ? fullscreenButton.id : fullscreenExitButton.id,
             enable: () => runtime.controlContainer.enable,
             parentNodes: [drawControlContainer, tForest],
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.play(); easeNodeFadeOut.start();} e.stopPropagation();},
             event: "mousedown",
             objectId: pauseButton.id
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.pause(); easeNodeFadeOut.clear();} e.stopPropagation();},
             event: "mousedown",
             objectId: [playButton.id, replayButton.id]
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {toggleFullscreen(); e.stopPropagation();},
             event: "mousedown",
             objectId: [fullscreenButton.id, fullscreenExitButton.id]
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.muted = true;} e.stopPropagation();},
             event: "mousedown",
             objectId: unmuteButton.id
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.muted = false;} e.stopPropagation();},
             event: "mousedown",
             objectId: muteButton.id
         });
-        eventNode.style({
+        this.data.eventNode.style({
             cursor: "pointer",
             objectId: [pauseButton.id, playButton.id, muteButton.id, unmuteButton.id, fullscreenButton.id, fullscreenExitButton.id]
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {setEnableControl();},
             event: "mousemove",
             objectId: [bgContainer.id, videoTexture.id]
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {
                 if(e.originalEvent.button === 0) {
@@ -857,7 +863,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             event: "mousedown",
             objectId: [bgContainer.id, videoTexture.id]
         });
-        eventNode.addEventListener({
+        this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {clearTimeout(runtime.click.timer); runtime.click.enable = false; toggleFullscreen(); e.stopPropagation();},
             event: "dblclick",
@@ -908,6 +914,10 @@ Object.defineProperties(WebPageVideoPlayerNode.prototype, {
     "maxHeight": {
         get() {return this.__getValue(this.input.maxHeight);},
         set(value) {this.input.maxHeight = value;}
+    },
+    "eventNode": {
+        get() {return this.__getValue(this.input.eventNode);},
+        set(value) {this.input.eventNode = value;}
     },
     "width": {
         get() {return this.data.width;},
