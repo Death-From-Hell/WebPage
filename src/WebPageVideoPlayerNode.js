@@ -910,10 +910,12 @@ Object.defineProperties(WebPageVideoPlayerNode.prototype, {
         set(value) {this.input.maxHeight = value;}
     },
     "width": {
-        get() {return this.width;},
+        get() {return this.data.width;},
+        set(value) {this.data.width = value;}
     },
     "height": {
-        get() {return this.height;},
+        get() {return this.data.height;},
+        set(value) {this.data.height = value;}
     },
 });
 
