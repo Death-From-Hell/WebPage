@@ -84,7 +84,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
         if(this.linkUrl && this.__isNode(this.eventNode)) {
             this.eventNode.style({
                 cursor: "pointer",
-                objectId: this.data.textNode.id
+                objectId: this.objectId
             });
             this.eventNode.addEventListener({
                 phase: "down",
@@ -100,7 +100,7 @@ class WebPageTextBlockNode extends WebPageBaseNode {
                     this.data.aElement.click();
                 },
                 event: "click",
-                objectId: this.data.textNode.id
+                objectId: this.objectId
             });
         }
         this.data.graph.sort();
