@@ -92,6 +92,14 @@ class WebPageTextBlockNode extends WebPageBaseNode {
                 event: "click",
                 objectId: this.objectId
             });
+            this.eventNode.addEventListener({
+                phase: "down",
+                func: (e) => {
+                    this.eventNode.link({url: this.linkUrl, target: this.linkTarget});
+                },
+                event: "touchclick",
+                objectId: this.objectId
+            });
         }
         this.data.graph.sort();
 //         this.data.graph.showSortedGraph();

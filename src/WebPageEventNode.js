@@ -58,9 +58,27 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
-            style: new Map()
+            eventTouchMove: {
+                down: new Map(),
+                up: new Map(),
+            },
+            eventTouchEnd: {
+                down: new Map(),
+                up: new Map(),
+            },
+            eventTouchClick: {
+                down: new Map(),
+                up: new Map(),
+            },
+            style: new Map(),
+            aElement: document.createElement("a"),
+            touch: {
+                start: false,
+                move: false,
+                x: undefined,
+                y: undefined
+            }
         });
-        this.data.aElement = document.createElement("a");
         this.__init();
     }
     addEventListener(argData) {
@@ -95,6 +113,15 @@ class WebPageEventNode extends WebPageBaseNode {
                 break;
             case "touchstart":
                 eventData = this.data.eventTouchStart;
+                break;
+            case "touchmove":
+                eventData = this.data.eventTouchMove;
+                break;
+            case "touchend":
+                eventData = this.data.eventTouchEnd;
+                break;
+            case "touchclick":
+                eventData = this.data.eventTouchClick;
                 break;
             default:
                 return false;
@@ -284,13 +311,63 @@ class WebPageEventNode extends WebPageBaseNode {
             const position = this.__getTouchPosition(e, true);
             const coords = this.__getCoords(position);
             const objects = this.__getObjects(coords);
+            this.data.touch.x = event.changedTouches[0].clientX;
+            this.data.touch.y = event.changedTouches[0].clientY;
+            this.data.touch.start = true;
+            this.data.touch.move = false;
             this.__run({
                 originalEvent: e,
                 event: "touchstart",
                 objects: objects,
-                eventData: this.data.eventWheel,
+                eventData: this.data.eventTouchStart,
                 position: position,
             });
+        }, false);
+        this.gl.canvas.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            const position = this.__getTouchPosition(e, true);
+            const coords = this.__getCoords(position);
+            const objects = this.__getObjects(coords);
+            const x = event.changedTouches[0].clientX;
+            const y = event.changedTouches[0].clientY;
+            this.data.touch.move = true;
+            this.__run({
+                originalEvent: e,
+                event: "touchmove",
+                objects: objects,
+                eventData: this.data.eventTouchMove,
+                position: position,
+                properties: {
+                    deltaX: x - this.data.touch.x,
+                    deltaY: y - this.data.touch.y,
+                }
+            });
+            this.data.touch.x = x;
+            this.data.touch.y = y;
+        }, false);
+        this.gl.canvas.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            const position = this.__getTouchPosition(e, true);
+            const coords = this.__getCoords(position);
+            const objects = this.__getObjects(coords);
+            this.__run({
+                originalEvent: e,
+                event: "touchend",
+                objects: objects,
+                eventData: this.data.eventTouchEnd,
+                position: position,
+            });
+            if(!this.data.touch.move) {
+                this.__run({
+                    originalEvent: e,
+                    event: "touchclick",
+                    objects: objects,
+                    eventData: this.data.eventTouchClick,
+                    position: position,
+                });
+            }
+            this.data.touch.start = false;
+            this.data.touch.move = false;
         }, false);
     }
     __run(argData) {

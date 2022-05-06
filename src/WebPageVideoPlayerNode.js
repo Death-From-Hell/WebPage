@@ -389,6 +389,12 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
             event: "mousedown",
             objectId: controlContainer.id
         });
+        this.data.eventNode.addEventListener({
+            phase: "down",
+            func: (e) => {e.stopPropagation();},
+            event: "touchclick",
+            objectId: controlContainer.id
+        });
         // *** Control Container End ***
         
         // *** Volume Control Start ***
@@ -434,6 +440,12 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         });
         this.data.eventNode.addEventListener({
             phase: "down",
+            func: (e) => {setVolume(e.u); runtime.volumeControl.change = true; e.stopPropagation();},
+            event: "touchclick",
+            objectId: [volumeControl.id]
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
             func: (e) => {
                 if(runtime.volumeControl.change) {
                     setEnableControl();
@@ -442,6 +454,18 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                 e.stopPropagation();
             },
             event: "mousemove",
+            objectId: [volumeControl.id]
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
+            func: (e) => {
+                if(runtime.volumeControl.change) {
+                    setEnableControl();
+                    setVolume(e.u);
+                }
+                e.stopPropagation();
+            },
+            event: "touchmove",
             objectId: [volumeControl.id]
         });
         this.data.eventNode.style({
@@ -501,6 +525,12 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         });
         this.data.eventNode.addEventListener({
             phase: "down",
+            func: (e) => {videoNode.video.currentTime = calculateTime(e.u); runtime.timeLine.seeking = true; e.stopPropagation();},
+            event: "touchclick",
+            objectId: timeLine.id
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
             func: (e) => {
                 const currentTime = calculateTime(e.u);
                 runtime.timeLineTitle.xPos = timeLine.width * e.u;
@@ -508,6 +538,17 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                 if(runtime.timeLine.seeking) {videoNode.video.currentTime = currentTime;}; e.stopPropagation();
             },
             event: "mousemove",
+            objectId: timeLine.id
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
+            func: (e) => {
+                const currentTime = calculateTime(e.u);
+                runtime.timeLineTitle.xPos = timeLine.width * e.u;
+                timeLineTitle.text = fancyTimeFormat(currentTime);
+                if(runtime.timeLine.seeking) {videoNode.video.currentTime = currentTime;}; e.stopPropagation();
+            },
+            event: "touchmove",
             objectId: timeLine.id
         });
         this.data.eventNode.addEventListener({
@@ -818,8 +859,20 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         });
         this.data.eventNode.addEventListener({
             phase: "down",
+            func: (e) => {videoNode.video.play(); easeNodeFadeOut.start(); e.stopPropagation();},
+            event: "touchclick",
+            objectId: pauseButton.id
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.pause(); easeNodeFadeOut.clear();} e.stopPropagation();},
             event: "mousedown",
+            objectId: [playButton.id, replayButton.id]
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
+            func: (e) => {videoNode.video.pause(); easeNodeFadeOut.clear(); e.stopPropagation();},
+            event: "touchclick",
             objectId: [playButton.id, replayButton.id]
         });
         this.data.eventNode.addEventListener({
@@ -830,14 +883,32 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         });
         this.data.eventNode.addEventListener({
             phase: "down",
+            func: (e) => {toggleFullscreen(); e.stopPropagation();},
+            event: "touchclick",
+            objectId: [fullscreenButton.id, fullscreenExitButton.id]
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.muted = true;} e.stopPropagation();},
             event: "mousedown",
             objectId: unmuteButton.id
         });
         this.data.eventNode.addEventListener({
             phase: "down",
+            func: (e) => {videoNode.video.muted = true; e.stopPropagation();},
+            event: "touchclick",
+            objectId: unmuteButton.id
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
             func: (e) => {if(e.originalEvent.button === 0) {videoNode.video.muted = false;} e.stopPropagation();},
             event: "mousedown",
+            objectId: muteButton.id
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
+            func: (e) => {videoNode.video.muted = false; e.stopPropagation();},
+            event: "touchclick",
             objectId: muteButton.id
         });
         this.data.eventNode.style({
@@ -852,6 +923,12 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         });
         this.data.eventNode.addEventListener({
             phase: "down",
+            func: (e) => {setEnableControl();},
+            event: "touchmove",
+            objectId: [bgContainer.id, videoTexture.id]
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
             func: (e) => {
                 if(e.originalEvent.button === 0) {
                     runtime.click.timer = setTimeout(function() {if(runtime.click.enable) playOrPause();}, config.click.timeout);
@@ -860,6 +937,12 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                 e.stopPropagation();
             },
             event: "mousedown",
+            objectId: [bgContainer.id, videoTexture.id]
+        });
+        this.data.eventNode.addEventListener({
+            phase: "down",
+            func: (e) => {playOrPause(); e.stopPropagation();},
+            event: "touchclick",
             objectId: [bgContainer.id, videoTexture.id]
         });
         this.data.eventNode.addEventListener({
