@@ -82,7 +82,6 @@ class WebPageTextBlockNode extends WebPageBaseNode {
         });
         this.data.aElement = document.createElement("a");
         if(this.linkUrl && this.__isNode(this.eventNode)) {
-            console.log("init");
             this.eventNode.style({
                 cursor: "pointer",
                 objectId: this.objectId
