@@ -88,7 +88,7 @@ class WebPageImageBlockNode extends WebPageBaseNode {
             objectId: this.data.textureNode.id,
         });
         
-        this.data.aElement = document.createElement("a");
+//         this.data.aElement = document.createElement("a");
         if(this.linkUrl && this.__isNode(this.eventNode)) {
             this.eventNode.style({
                 cursor: "pointer",
