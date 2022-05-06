@@ -54,6 +54,10 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
+            eventTouchStart: {
+                down: new Map(),
+                up: new Map(),
+            },
             style: new Map()
         });
         this.data.aElement = document.createElement("a");
@@ -88,6 +92,9 @@ class WebPageEventNode extends WebPageBaseNode {
                 break;
             case "wheel":
                 eventData = this.data.eventWheel;
+                break;
+            case "touchstart":
+                eventData = this.data.eventTouchStart;
                 break;
             default:
                 return false;
@@ -273,6 +280,19 @@ class WebPageEventNode extends WebPageBaseNode {
                 }
             });
         }, false);
+        this.gl.canvas.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            const position = this.__getTouchPosition(e, true);
+            const coords = this.__getCoords(position);
+            const objects = this.__getObjects(coords);
+            this.__run({
+                originalEvent: e,
+                event: "touchstart",
+                objects: objects,
+                eventData: this.data.eventWheel,
+                position: position,
+            });
+        }, false);
     }
     __run(argData) {
         /*
@@ -373,6 +393,22 @@ class WebPageEventNode extends WebPageBaseNode {
             return {
                 x: event.clientX - rect.left,
                 y: event.clientY - rect.top
+            };
+        }
+    }
+    __getTouchPosition(event, swapY = false) {
+        const touch = event.changedTouches[0];
+        const target = touch.target;
+        const rect = target.getBoundingClientRect();
+        if(swapY === true) {
+            return {
+                x: touch.clientX - rect.left,
+                y: target.height - (touch.clientY - rect.top)
+            };
+        } else {
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
             };
         }
     }
