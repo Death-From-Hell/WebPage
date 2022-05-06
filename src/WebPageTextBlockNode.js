@@ -22,6 +22,9 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             {name: "eventNode"},
             {name: "objectId", defaultValue: this.id},
             {name: "instantDraw"},
+            {name: "eventNode"},
+            {name: "linkUrl"},
+            {name: "linkTarget", defaultValue: "_self"},
         );
     }
     async init() {
@@ -77,6 +80,29 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             eventNode: () => this.eventNode,
             objectId: () => this.objectId,
         });
+        this.data.aElement = document.createElement("a");
+        if(this.linkUrl && this.__isNode(this.eventNode)) {
+            this.eventNode.style({
+                cursor: "pointer",
+                objectId: this.data.textNode.id
+            });
+            this.eventNode.addEventListener({
+                phase: "down",
+                func: (e) => {
+                    let target;
+                    if(["_blank", "_self", "_parent", "_top"].includes(this.linkTarget)) {
+                        target = this.linkTarget;
+                    } else {
+                        target = "_self";
+                    }
+                    this.data.aElement.target = target;
+                    this.data.aElement.href = this.linkUrl;
+                    this.data.aElement.click();
+                },
+                event: "click",
+                objectId: this.data.textNode.id
+            });
+        }
         this.data.graph.sort();
 //         this.data.graph.showSortedGraph();
         return this;
@@ -144,6 +170,18 @@ Object.defineProperties(WebPageTextBlockNode.prototype, {
     "instantDraw": {
         get() {return this.__getValue(this.input.instantDraw);},
         set(value) {this.input.instantDraw = value;}
+    },
+    "eventNode": {
+        get() {return this.__getValue(this.input.eventNode);},
+        set(value) {this.input.eventNode = value;}
+    },
+    "linkUrl": {
+        get() {return this.__getValue(this.input.linkUrl);},
+        set(value) {this.input.linkUrl = value;}
+    },
+    "linkTarget": {
+        get() {return this.__getValue(this.input.linkTarget);},
+        set(value) {this.input.linkTarget = value;}
     },
 });
 
