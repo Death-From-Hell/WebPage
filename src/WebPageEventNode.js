@@ -143,7 +143,6 @@ class WebPageEventNode extends WebPageBaseNode {
         }
     }
     link(argData) {
-        const url = argData.url;
         let target;
         if(["_blank", "_self", "_parent", "_top"].includes(argData.target)) {
             target = argData.target;
@@ -151,7 +150,7 @@ class WebPageEventNode extends WebPageBaseNode {
             target = "_self";
         }
         this.data.aElement.target = target;
-        this.data.aElement.href = this.linkUrl;
+        this.data.aElement.href = argData.url;
         this.data.aElement.click();
     }
     __init() {
