@@ -369,6 +369,10 @@ class WebPageEventNode extends WebPageBaseNode {
             this.data.touch.start = false;
             this.data.touch.move = false;
         }, false);
+        this.gl.canvas.addEventListener("touchcancel", (e) => {
+            this.data.touch.start = false;
+            this.data.touch.move = false;
+        }, false);
     }
     __run(argData) {
         /*
