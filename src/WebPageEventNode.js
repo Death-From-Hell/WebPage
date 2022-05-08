@@ -66,6 +66,10 @@ class WebPageEventNode extends WebPageBaseNode {
                 down: new Map(),
                 up: new Map(),
             },
+            eventTouchCancel: {
+                down: new Map(),
+                up: new Map(),
+            },
             eventTouchClick: {
                 down: new Map(),
                 up: new Map(),
@@ -119,6 +123,9 @@ class WebPageEventNode extends WebPageBaseNode {
                 break;
             case "touchend":
                 eventData = this.data.eventTouchEnd;
+                break;
+            case "touchcancel":
+                eventData = this.data.eventTouchCancel;
                 break;
             case "touchclick":
                 eventData = this.data.eventTouchClick;
@@ -370,8 +377,21 @@ class WebPageEventNode extends WebPageBaseNode {
             this.data.touch.move = false;
         }, false);
         this.gl.canvas.addEventListener("touchcancel", (e) => {
-            this.data.touch.start = false;
-            this.data.touch.move = false;
+            e.preventDefault();
+            const position = this.__getTouchPosition(e, true);
+            const coords = this.__getCoords(position);
+            const objects = this.__getObjects(coords);
+            this.data.touch.x = event.changedTouches[0].clientX;
+            this.data.touch.y = event.changedTouches[0].clientY;
+            this.__run({
+                originalEvent: e,
+                event: "touchcancel",
+                objects: objects,
+                eventData: this.data.eventTouchCancel,
+                position: position,
+            });
+//             this.data.touch.start = false;
+//             this.data.touch.move = false;
         }, false);
     }
     __run(argData) {
