@@ -429,10 +429,10 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {
-//                 if(runtime.volumeControl.change) {
+                if(runtime.volumeControl.change) {
                     setEnableControl(config.mouseTimeout);
                     setVolume(e.u);
-//                 }
+                }
                 e.stopPropagation();
             },
             event: "mousemove",
