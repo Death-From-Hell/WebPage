@@ -441,10 +441,8 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         this.data.eventNode.addEventListener({
             phase: "down",
             func: (e) => {
-//                 if(runtime.volumeControl.change) {
-                    setEnableControl(config.touchTimeout);
-                    setVolume(e.u);
-//                 }
+                setEnableControl(config.touchTimeout);
+                setVolume(e.u);
                 e.stopPropagation();
             },
             event: "touchmove",
@@ -541,7 +539,8 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                 setEnableControl(config.touchTimeout);
                 runtime.timeLineTitle.enable = true;
                 const currentTime = calculateTime(e.u);
-                if(runtime.timeLine.seeking) {videoNode.video.currentTime = currentTime;}; e.stopPropagation();
+                videoNode.video.currentTime = currentTime;
+                e.stopPropagation();
             },
             event: "touchmove",
             objectId: timeLine.id
