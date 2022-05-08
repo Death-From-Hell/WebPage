@@ -936,7 +936,7 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         });
         this.data.eventNode.addEventListener({
             phase: "down",
-            func: (e) => {setEnableControl(config.touchTimeout); e.stopPropagation();},
+            func: (e) => {setEnableControl(config.touchTimeout);/* e.stopPropagation();*/},
             event: "touchmove",
             objectId: [bgContainer.id, videoTexture.id]
         });
