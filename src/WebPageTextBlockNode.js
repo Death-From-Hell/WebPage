@@ -102,7 +102,6 @@ class WebPageTextBlockNode extends WebPageBaseNode {
             });
         }
         this.data.graph.sort();
-//         this.data.graph.showSortedGraph();
         return this;
     }
     __update() {

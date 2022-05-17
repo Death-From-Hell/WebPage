@@ -390,16 +390,9 @@ class WebPageEventNode extends WebPageBaseNode {
                 eventData: this.data.eventTouchCancel,
                 position: position,
             });
-//             this.data.touch.start = false;
-//             this.data.touch.move = false;
         }, false);
     }
     __run(argData) {
-        /*
-        if((argData.event == "mouseover" || argData.event == "mouseout") && argData.objects.length > 0) {
-            console.dir(argData.event, argData.objects);
-        }
-        */
         const objects = argData.objects;
         const eventData = argData.eventData;
         const position = argData.position;

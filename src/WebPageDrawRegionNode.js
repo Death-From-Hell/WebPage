@@ -55,14 +55,12 @@ class WebPageDrawRegionNode extends WebPageBaseNode {
             transformMatrix = Mat4.identity();
         }
         let actualVertexData = [];
-//         let actualVertexData2 = [];
         for(let i = 0; i < 4; i++) {
             const k = i * 4;
             const vertex = [vertexData[k], vertexData[k + 1], vertexData[k + 2], vertexData[k + 3]];
             const v1 = Mat4.multiplyByVector(transformMatrix, vertex);
             const v2 = Mat4.multiplyByVector(projectionMatrix, v1);
             actualVertexData.push(v2[0] / v2[3], v2[1] / v2[3], v2[2] / v2[3]);
-//             actualVertexData2.push(v2[0], v2[1], v2[2], v2[3]);
         }
         
         const polygon = [

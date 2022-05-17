@@ -7,17 +7,17 @@
 
 import {WebPageBaseNode} from "./WebPageBaseNode.js";
 
-// Обработчик ошибок
+// Error handler
 function WebPageError(argMessage) {
   	const error = new Error(argMessage);
-	console.log("%cОшибка.", "font-weight: bold; color: red;");
+	console.log("%cError.", "font-weight: bold; color: red;");
   	console.log(`%c${error.message}`, "color: red;");
     console.log(`%c${error.stack}`, "color: blue;");
-  	throw 'Программа остановлена.';
+  	throw 'Program stopped.';
 }
 function WebPageSimpleError(argMessage) {
 	console.error(argMessage);
-  	throw 'Программа остановлена.';
+  	throw 'Program stopped.';
 }
 
 class WebPage extends WebPageBaseNode {
@@ -34,6 +34,7 @@ class WebPage extends WebPageBaseNode {
         this.rootNode = undefined;
         this.__loadInputVar(argObject,
             {name: "canvas"},
+            {name: "version"},
             {name: "resize", defaultValue: false},
             {name: "cullFaceEnable", defaultValue: false},
             {name: "cullFace", defaultValue: "back"},
@@ -48,9 +49,29 @@ class WebPage extends WebPageBaseNode {
             this.canvas.height = window.innerHeight;
             document.documentElement.appendChild(this.canvas);
         }
-        this.gl = this.canvas.getContext("webgl", {depth: true, stencil: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: this.input.preserveDrawingBuffer});
+        const options = {depth: true, stencil: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: this.input.preserveDrawingBuffer};
+        switch(this.input.version) {
+            case 1:
+            {
+                this.gl = this.canvas.getContext("webgl", options);
+                break;
+            }
+            case 2:
+            {
+                this.gl = this.canvas.getContext("webgl2", options);
+                break;
+            }
+            default:
+            {
+                this.gl = this.canvas.getContext("webgl2", options);
+                if(!this.gl) {
+                    this.gl = this.canvas.getContext("webgl", options);
+                }            
+                break;
+            }
+        }
         if(!this.gl) {
-            WebPageError("Невозможно инициализировать webgl.");
+            WebPageError("WebGL initialization error.");
         }
         if(this.input.resize) {
             window.addEventListener("resize", () => {
@@ -128,13 +149,12 @@ class WebPage extends WebPageBaseNode {
     }
     blending() {
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        // Blending with straight-alpha input colors and transparent output colors
-//         this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
-        // Blending premultiplied colors
-//         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
-        // Эксперимент
-//         this.gl.blendEquation(this.gl.FUNC_ADD);
-//         this.gl.blendFunc(this.gl.ONE, this.gl.ONE);
+        /*
+        Blending with straight-alpha input colors and transparent output colors
+            this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+        Blending premultiplied colors
+            this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+        */
     }
     update() {
         this.rootNode?.__update();
@@ -146,18 +166,18 @@ class WebPage extends WebPageBaseNode {
         this.gl.shaderSource(fragmentShader, argFShaderSrc);
         this.gl.compileShader(vertexShader);
         if(!this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS)) {
-            WebPageError("Ошибка в вершинном шейдере: " + this.gl.getShaderInfoLog(vertexShader));
+            WebPageError("Vertex shader error: " + this.gl.getShaderInfoLog(vertexShader));
         }
         this.gl.compileShader(fragmentShader);
         if(!this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS)) {
-            WebPageError("Ошибка в фрагментном шейдере: " + this.gl.getShaderInfoLog(fragmentShader));
+            WebPageError("Fragment shader error: " + this.gl.getShaderInfoLog(fragmentShader));
         }
         const program = this.gl.createProgram();
         this.gl.attachShader(program, vertexShader);
         this.gl.attachShader(program, fragmentShader);
         this.gl.linkProgram(program);
         if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-            WebPageError("Ошибка линковки программы: " + this.gl.getProgramInfoLog(program));
+            WebPageError("Program linking error: " + this.gl.getProgramInfoLog(program));
         }
         return program;
     }
@@ -176,9 +196,9 @@ class WebPage extends WebPageBaseNode {
                 .catch(error => {
                     let dopMessage = ``;
                     if(error.hasOwnProperty("lineNumber") && error.hasOwnProperty("columnNumber")) {
-                        dopMessage = ` в строке ${error.lineNumber}, колонке ${error.columnNumber}`;
+                        dopMessage = ` in line ${error.lineNumber}, column ${error.columnNumber}`;
                     }
-                    WebPageSimpleError(`Ошибка в узле '${node}' ${error}${dopMessage}.`);
+                    WebPageSimpleError(`Error in node '${node}' ${error}${dopMessage}.`);
                 });
         });
         return Promise.all(promises);
@@ -186,7 +206,7 @@ class WebPage extends WebPageBaseNode {
     node(argName, argParams = {}) {
         const nameNode = this.__fullNameNode(argName);
         if(!this.data.importedNodes.has(nameNode)) {
-            WebPageError(`Не загружено описание узла '${argName}'.`);
+            WebPageError(`Node description not loaded '${argName}'.`);
         }
         const node = this.data.importedNodes.get(nameNode);
         const instance = new node(argParams, {

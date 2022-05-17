@@ -50,7 +50,7 @@ class WebPageGraphNode extends WebPageBaseNode {
                 }
                 case 1:
                 {
-                    WebPageError("Цикл между узлами.");
+                    WebPageError("Cycle between nodes.");
                 }
                 case 2:
                 {
@@ -90,7 +90,7 @@ class WebPageGraphNode extends WebPageBaseNode {
     node(argName, argParams = {}) {
         const nameNode =  "WebPage" + argName[0].toUpperCase() + argName.substring(1) + "Node";
         if(!this.root.data.importedNodes.has(nameNode)) {
-            WebPageError(`Не загружено описание узла '${argName}'.`);
+            WebPageError(`Node description not loaded '${argName}'.`);
         }
         const node = this.root.data.importedNodes.get(nameNode);
         const instance = new node(argParams, {

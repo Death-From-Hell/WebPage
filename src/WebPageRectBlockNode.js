@@ -47,7 +47,6 @@ class WebPageRectBlockNode extends WebPageBaseNode {
             height: () => this.height,
             color: () => this.color,
             instantDraw: () => this.instantDraw,
-//             cleanup: () => {console.log(this.name, this.clearColor);}
         });
 
         const pivotPointRect = this.data.graph.node("PivotPoint", {
@@ -80,11 +79,9 @@ class WebPageRectBlockNode extends WebPageBaseNode {
             instantDraw: () => this.instantDraw,
             eventNode: () => this.eventNode,
             objectId: () => this.objectId,
-//             cleanup: () => {console.log(this.name, this.update);}
         });
         
         this.data.graph.sort();
-//         this.data.graph.showSortedGraph();
         return this;
     }
     __update() {

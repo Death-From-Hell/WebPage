@@ -95,7 +95,6 @@ class WebPageTransformForestNode extends WebPageBaseNode {
             }
             node.finalMatrix = matrix;
         }
-//         console.log(this.data.node);
         return this;
     }
     __transformNode(argNode) {

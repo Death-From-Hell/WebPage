@@ -24,7 +24,7 @@ class WebPageVideoNode extends WebPageBaseNode {
                 resolve(this);
             }, false);
             this.video.addEventListener("error", () => {
-                reject(new Error(`Ошибка загрузки видеофайла ${this.src}`));
+                reject(new Error(`Video file upload error ${this.src}`));
             }, false);
             this.video.src = this.src;
         });

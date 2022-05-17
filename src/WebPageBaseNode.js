@@ -10,7 +10,6 @@ class WebPageBaseNode {
         this.input = {};
         this.data = {};
         this.event = {};
-//         this.parent = new Set();
         this.__loadVar(argDataVar);
         this.__loadInputVar(argObject,
             {name: "name"},
@@ -25,7 +24,7 @@ class WebPageBaseNode {
         return (Math.random() + 1).toString(36).substring(2);
     }
     __getType(arg) {
-        // number, boolean, string, array, object, function, undefined, window, htmldocument и т.д.
+        // number, boolean, string, array, object, function, undefined, window, htmldocument, etc.
         return Object.prototype.toString.call(arg).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
     }
     __getValue(argValue) {

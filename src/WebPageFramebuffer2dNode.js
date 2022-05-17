@@ -26,7 +26,7 @@ class WebPageFramebuffer2dNode extends WebPageBaseTextureNode {
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.width, this.height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.data.texture, 0);
         if(this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) !== this.gl.FRAMEBUFFER_COMPLETE) {
-            WebPageError("Ошибка создания фреймбуфера.");
+            WebPageError("Framebuffer creation error.");
         }
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);

@@ -458,7 +458,6 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         const timeLine = await this.data.graph.node("Canvas", {
             name: "Time Line",
             width: () => document.fullscreenElement ? window.innerWidth : this.width,
-//             width: () => this.width,
             height: config.timeLine.height,
             instantDraw: true,
             minFilter: "linear",
@@ -652,15 +651,11 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                             name: "Translate Control Container",
                             x: () => document.fullscreenElement ? -window.innerWidth / 2 : -this.width / 2,
                             y: () => document.fullscreenElement ? window.innerHeight / 2 : this.height / 2,
-//                             y: () => document.fullscreenElement ? window.innerHeight / 2 : this.height / 2,
                             z: 10,
                             children: [
                                 {
                                     type: "PivotPoint",
                                     name: "Pivot Point Control Container",
-//                                     objectNode: controlContainer,
-//                                     x: "left",
-//                                     y: "bottom",
                                     x: 0,
                                     y: config.controlContainer.height,
                                     children: [
@@ -674,7 +669,6 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
                                                 {
                                                     type: "Translate",
                                                     name: "Translate Time Line Title",
-//                                                     x: () => runtime.timeLineTitle.xPos,
                                                     x: () => timeLine.width * videoNode.video.currentTime / videoNode.video.duration,
                                                     children: [
                                                         {
@@ -967,7 +961,6 @@ class WebPageVideoPlayerNode extends WebPageBaseNode {
         // *** Buttons End ***        
 
         this.data.graph.sort();
-//         this.data.graph.showSortedGraph();
         return this;
     }
     __update() {

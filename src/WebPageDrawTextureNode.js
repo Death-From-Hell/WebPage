@@ -154,7 +154,6 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
         } else {
             transformMatrix = Mat4.identity();
         }
-//         console.log(transformMatrix);
         let actualVertexData = [];
         let actualVertexData2 = [];
         for(let i = 0; i < 4; i++) {
@@ -246,9 +245,7 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
                 this.root.clearColor();
             }
         }
-//         this.gl.depthMask(false);
         this.gl.drawElements(this.gl.TRIANGLE_FAN, 4, this.gl.UNSIGNED_BYTE, 0);
-//         this.gl.depthMask(true);
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
         if(this.framebuffer) {
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
@@ -284,14 +281,6 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
             {x: 1, y: -1},
             {x: -1, y: -1},
         ];
-        /*
-        const polygon2 = [
-            {x: argData[0], y: argData[1], z: argData[2]},
-            {x: argData[3], y: argData[4], z: argData[5]},
-            {x: argData[6], y: argData[7], z: argData[8]},
-            {x: argData[9], y: argData[10], z: argData[11]},
-        ];
-        */
         if(polygon2.every((e) => e.z > 1 ? true : false)) {
             return true;
         }

@@ -319,12 +319,12 @@ class WebPageEaseNode extends WebPageBaseNode {
                 }
                 default: 
                 {
-                    WebPageError(`Неверное состояние innerState = '${this.data.innerState}'`);
+                    WebPageError(`Invalid state innerState = '${this.data.innerState}'`);
                     throw new Error('');
                 }
             }
             if(++count > 10) {
-                WebPageError(`Зацикливание innerState = '${this.data.innerState}'`);
+                WebPageError(`Looping innerState = '${this.data.innerState}'`);
 //                 break;
             }
         } while(!done)

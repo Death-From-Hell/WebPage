@@ -42,11 +42,8 @@ class WebPageCanvasNode extends WebPageBaseTextureNode {
         }
     }
     draw() {
-//         this.canvas = document.createElement("canvas");
-//         this.context = this.canvas.getContext("2d");
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-//         console.log("Canvas", this.width, this.height, this.canvas.width, this.canvas.height);
         if(this.__getType(this.code) === "function") {
             this.code.call(this);
         }

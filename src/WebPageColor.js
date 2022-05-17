@@ -2,7 +2,7 @@
 //         Copyright 2022 Leonid Petrunya
 //              All rights reserved
 // ----------------------------------------------
-//                  WebPageMath
+//                 WebPageColor
 // ----------------------------------------------
 
 function Color() {}

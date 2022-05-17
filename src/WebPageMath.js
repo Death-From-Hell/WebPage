@@ -34,7 +34,7 @@ Mat4.transpose = function(a) {
 	);
 }
 Mat4.multiplyByMatrix = function(a, b) {
-	// a, b - матрицы 4x4
+	// a, b - matrix 4x4
 	const out = new Float32Array(16);
 	out[0] = a[0]*b[0] + a[1]*b[4] + a[2]*b[8] + a[3]*b[12];
 	out[1] = a[0]*b[1] + a[1]*b[5] + a[2]*b[9] + a[3]*b[13];
@@ -55,8 +55,8 @@ Mat4.multiplyByMatrix = function(a, b) {
 	return out;
 }
 Mat4.multiplyByVector = function(a, b) {
-	// a - матрица 4x4
-    // b - вектор
+	// a - matrix 4x4
+    // b - vector
 	const out = new Float32Array(4);
 	out[0] = a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	out[1] = a[4]*b[0] + a[5]*b[1] + a[6]*b[2] + a[7]*b[3];
@@ -388,11 +388,11 @@ Quat.null = function() {
 	return new Float32Array([0,0,0,0]);
 }
 Quat.identity = function() {
-	// Возвращает единичный кватернион
+	// Returns the unit quaternion
 	return new Float32Array([1,0,0,0]);
 }
 Quat.setAxisAngle = function(axis, angle) {
-	// Создает кватернион из заданной оси axis и угла angle
+	// Creates a quaternion from the given axis and angle
 	const out = Quat.null();
 	angle = angle * 0.5;
 	let s = Math.sin(angle);
@@ -403,7 +403,7 @@ Quat.setAxisAngle = function(axis, angle) {
 	return out;
 }
 Quat.multiply = function(q, r) {
-	// Перемножает два кватерниона
+	// Multiplies two quaternions
 	const out = Quat.null();
 	out[0] = r[0]*q[0] - r[1]*q[1] - r[2]*q[2] - r[3]*q[3];
 	out[1] = r[0]*q[1] + r[1]*q[0] - r[2]*q[3] + r[3]*q[2];
@@ -412,15 +412,15 @@ Quat.multiply = function(q, r) {
 	return out;
 }
 Quat.fromVector = function(vector) {
-	// Создает кватернион из трехмерного вектора
+	// Creates a quaternion from a 3D vector
 	return new Float32Array([0, vector[0], vector[1], vector[2]]);
 }
 Quat.conjugate = function(quat) {
 	return new Float32Array([quat[0], -quat[1], -quat[2], -quat[3]]);
 }
 Quat.rotate = function(vector, quat) {
-	// Возвращает новые координаты вектора vector
-	// quat - кватернион поворота
+	// Returns the new coordinates of vector
+	// quat - rotation quaternion
 	const vQuat = Quat.fromVector(vector);
 	const cQuat = Quat.conjugate(quat);
 	const m1 = Quat.multiply(quat, vQuat);

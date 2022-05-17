@@ -13,9 +13,9 @@ class WebPageBaseTextureNode extends WebPageBaseNode {
         this.__loadInputVar(argObject,
             {name: "mipmap", defaultValue: true},
             {name: "minFilter"},
-            {name: "magFilter"/*, defaultValue: "linear"*/},
-            {name: "wrapS"/*, defaultValue: "repeat"*/},
-            {name: "wrapT"/*, defaultValue: "repeat"*/},
+            {name: "magFilter"},
+            {name: "wrapS"},
+            {name: "wrapT"},
         );
         this.data.texture = undefined;
         this.data.width = undefined;

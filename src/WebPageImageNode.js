@@ -34,7 +34,7 @@ class WebPageImageNode extends WebPageBaseNode {
             this.image.addEventListener("error", () => {
                 this.trigger("onerror");
                 this.trigger("onloadend");
-                reject(new Error(`Ошибка загрузки изображения '${this.src}'`));
+                reject(new Error(`Image loading error '${this.src}'`));
             }, false);
             this.image.src = this.src;
         });
