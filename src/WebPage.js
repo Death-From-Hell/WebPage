@@ -10,14 +10,14 @@ import {WebPageBaseNode} from "./WebPageBaseNode.js";
 // Error handler
 function WebPageError(argMessage) {
   	const error = new Error(argMessage);
-	console.log("%cError.", "font-weight: bold; color: red;");
+	console.log("%cError", "font-weight: bold; color: red;");
   	console.log(`%c${error.message}`, "color: red;");
     console.log(`%c${error.stack}`, "color: blue;");
-  	throw 'Program stopped.';
+  	throw 'Program stopped';
 }
 function WebPageSimpleError(argMessage) {
 	console.error(argMessage);
-  	throw 'Program stopped.';
+  	throw 'Program stopped';
 }
 
 class WebPage extends WebPageBaseNode {
@@ -25,16 +25,18 @@ class WebPage extends WebPageBaseNode {
         super();
         this.root = this;
         this.gl = undefined;
-        this.input = {};
-        this.data = {
+        Object.assign(this.data, {
             id: 1,
-            importedNodes: new Map(),
-        };
-        this.event = {};
+            importedNodes: new Map()
+        });
+        this.extension = new Map();
         this.rootNode = undefined;
+        this.version = undefined;
+        this.precision = "medium";
         this.__loadInputVar(argObject,
             {name: "canvas"},
             {name: "version"},
+            {name: "precision"},
             {name: "resize", defaultValue: false},
             {name: "cullFaceEnable", defaultValue: false},
             {name: "cullFace", defaultValue: "back"},
@@ -66,12 +68,30 @@ class WebPage extends WebPageBaseNode {
                 this.gl = this.canvas.getContext("webgl2", options);
                 if(!this.gl) {
                     this.gl = this.canvas.getContext("webgl", options);
-                }            
+                }
                 break;
             }
         }
         if(!this.gl) {
-            WebPageError("WebGL initialization error.");
+            WebPageError("WebGL initialization error");
+        }
+        this.version = this.gl instanceof WebGLRenderingContext ? 1 : 2;
+        switch(this.input.precision?.toLowerCase()) {
+            case "low":
+            {
+                this.precision = "lowp";
+                break;
+            }
+            case "high":
+            {
+                this.precision = "highp";
+                break;
+            }
+            default: 
+            {
+                this.precision = "mediump";
+                break;
+            }
         }
         if(this.input.resize) {
             window.addEventListener("resize", () => {
@@ -89,6 +109,17 @@ class WebPage extends WebPageBaseNode {
         this.clearStencil();
         this.cullFaceEnable();
         this.cullFace();
+    }
+    getExtension(argName) {
+        if(this.extension.has(argName)) {
+            return this.extension.get(argName);
+        } else {
+            if(this.gl.getSupportedExtensions().includes(argName)) {
+                this.extension.set(argName, this.gl.getExtension(argName));
+                return this.extension.get(argName);
+            }
+        }
+        return undefined;
     }
     __uniqueId() {
         return this.data.id++;
@@ -198,7 +229,7 @@ class WebPage extends WebPageBaseNode {
                     if(error.hasOwnProperty("lineNumber") && error.hasOwnProperty("columnNumber")) {
                         dopMessage = ` in line ${error.lineNumber}, column ${error.columnNumber}`;
                     }
-                    WebPageSimpleError(`Error in node '${node}' ${error}${dopMessage}.`);
+                    WebPageSimpleError(`Error in node '${node}' ${error}${dopMessage}`);
                 });
         });
         return Promise.all(promises);
@@ -206,7 +237,7 @@ class WebPage extends WebPageBaseNode {
     node(argName, argParams = {}) {
         const nameNode = this.__fullNameNode(argName);
         if(!this.data.importedNodes.has(nameNode)) {
-            WebPageError(`Node description not loaded '${argName}'.`);
+            WebPageError(`Node description not loaded '${argName}'`);
         }
         const node = this.data.importedNodes.get(nameNode);
         const instance = new node(argParams, {

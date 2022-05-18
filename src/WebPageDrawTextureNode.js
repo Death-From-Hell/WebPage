@@ -33,6 +33,23 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
             {name: "blendDstRGB", defaultValue: "oneMinusSrcAlpha"},
             {name: "blendDstAlpha", defaultValue: "oneMinusSrcAlpha"},
         );
+        this.data.vSrc = `
+			attribute vec4 a_vertex;
+			attribute vec2 a_texCoord;
+			varying vec2 v_texCoord;
+			void main() {
+				gl_Position = a_vertex;
+				v_texCoord = a_texCoord;
+			}
+		`;
+        this.data.fSrc = `
+            precision ${this.root.precision} float;
+			uniform sampler2D u_texture;
+			varying vec2 v_texCoord;
+			void main() {
+				gl_FragColor = texture2D(u_texture, v_texCoord);
+			}
+        `;
         if(this.enable && this.instantDraw) {
             this.__setup();
             this.draw();
@@ -69,23 +86,6 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
     }
     static __draw = {
         ready: false,
-        vSrc: `
-			attribute vec4 a_vertex;
-			attribute vec2 a_texCoord;
-			varying vec2 v_texCoord;
-			void main() {
-				gl_Position = a_vertex;
-				v_texCoord = a_texCoord;
-			}
-		`,
-        fSrc: `
-			precision mediump float;
-			uniform sampler2D u_texture;
-			varying vec2 v_texCoord;
-			void main() {
-				gl_FragColor = texture2D(u_texture, v_texCoord);
-			}
-		`,
         indexData: [0,1,2,3],
         program: undefined,
         attribute: {
@@ -103,7 +103,7 @@ class WebPageDrawTextureNode extends WebPageBaseNode {
     }
     __createProgram() {
         const draw = WebPageDrawTextureNode.__draw;
-        draw.program = this.root.program(draw.vSrc, draw.fSrc);
+        draw.program = this.root.program(this.data.vSrc, this.data.fSrc);
         draw.buffer.vertex = this.gl.createBuffer();
         draw.buffer.texture = this.gl.createBuffer();
         draw.buffer.index = this.gl.createBuffer();

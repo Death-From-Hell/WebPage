@@ -21,16 +21,7 @@ class WebPageAdjustmentNode extends WebPageEffectNode {
             {name: "blue", defaultValue: 1},
             {name: "alpha", defaultValue: 1},
         );
-        this.__init();
-        if(this.enable && this.instantDraw) {
-            this.__setup();
-            this.draw();
-            this.__cleanup();
-        }
-    }
-    static __draw = {
-        ready: false,
-        vSrc: `
+        this.data.vSrc = `
 			attribute vec4 a_vertex;
 			attribute vec2 a_texCoord;
 			varying vec2 v_texCoord;
@@ -38,9 +29,9 @@ class WebPageAdjustmentNode extends WebPageEffectNode {
 				gl_Position = a_vertex;
 				v_texCoord = a_texCoord;
 			}
-		`,
-        fSrc: `
-			precision mediump float;
+        `;
+        this.data.fSrc = `
+            precision ${this.root.precision} float;
 			uniform sampler2D u_texture;
 			varying vec2 v_texCoord;
             uniform float u_gamma;
@@ -52,7 +43,6 @@ class WebPageAdjustmentNode extends WebPageEffectNode {
             uniform float u_green;
             uniform float u_blue;
             uniform float u_alpha;
-            
 			vec3 adjustGamma(vec3 color, float value) {
                 return pow(color, vec3(1.0 / value));
             }
@@ -70,7 +60,6 @@ class WebPageAdjustmentNode extends WebPageEffectNode {
                 vec3 grayscale = vec3(dot(color, luminosityFactor));
                 return mix(grayscale, color, 1.0 + value);
             }            
-            
             void main() {
 				vec4 texel = texture2D(u_texture, v_texCoord);
                 vec3 color = texel.rgb;
@@ -85,7 +74,16 @@ class WebPageAdjustmentNode extends WebPageEffectNode {
                 float alpha = texel.a * u_alpha;
                 gl_FragColor = vec4(color, alpha);
 			}
-		`,
+        `;
+        this.__init();
+        if(this.enable && this.instantDraw) {
+            this.__setup();
+            this.draw();
+            this.__cleanup();
+        }
+    }
+    static __draw = {
+        ready: false,
 		vertexData: [
 			-1,1,
 			-1,-1,

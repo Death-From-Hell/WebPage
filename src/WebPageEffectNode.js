@@ -30,7 +30,7 @@ class WebPageEffectNode extends WebPageFramebuffer2dNode {
     }
     __createProgram() {
         const draw = this.data.currentClass.__draw;
-        draw.program = this.root.program(draw.vSrc, draw.fSrc);
+        draw.program = this.root.program(this.data.vSrc, this.data.fSrc);
         draw.buffer.vertex = this.gl.createBuffer();
         draw.buffer.texture = this.gl.createBuffer();
         draw.buffer.index = this.gl.createBuffer();
