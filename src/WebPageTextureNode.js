@@ -22,9 +22,9 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
         }
     }
     __init() {
-        this.texture = this.gl.createTexture();
         this.width = this.sourceNode.width;
         this.height = this.sourceNode.height;
+        this.texture = this.gl.createTexture();
         this.__checkPowerOfTwo();
         this.__setMipmap();
         this.__setMagFilter();
@@ -51,8 +51,8 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
             case "ImageBitmap":
             {
                 const canvas = document.createElement("canvas");
-                canvas.width = this.sourceNode.width;
-                canvas.height = this.sourceNode.height;
+                canvas.width = this.width;
+                canvas.height = this.height;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(this.sourceNode, 0, 0);
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, canvas);
@@ -65,6 +65,7 @@ class WebPageTextureNode extends WebPageBaseTextureNode {
                 this.generateMipmap();
                 break;
             }
+            case "WebPageCameraNode":
             case "WebPageVideoNode":
             {
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.sourceNode.video);

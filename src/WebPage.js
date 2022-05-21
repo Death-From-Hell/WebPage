@@ -51,7 +51,14 @@ class WebPage extends WebPageBaseNode {
             this.canvas.height = window.innerHeight;
             document.documentElement.appendChild(this.canvas);
         }
-        const options = {depth: true, stencil: true, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: this.input.preserveDrawingBuffer};
+        const options = {
+            depth: true,
+            stencil: true,
+            alpha: true,
+            premultipliedAlpha: false,
+            preserveDrawingBuffer: this.input.preserveDrawingBuffer,
+            powerPreference: "high-performance"
+        };
         switch(this.input.version) {
             case 1:
             {
